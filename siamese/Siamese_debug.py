@@ -1,0 +1,102 @@
+import os
+import numpy as np
+from PIL import Image, ImageOps
+from torchvision import transforms
+import matplotlib.pyplot as plt
+import torchvision.models as models
+from torch import nn
+import torch.nn.functional as F
+import torch
+
+
+def l2_norm(x):
+    if len(x.shape):
+        x = x.reshape((x.shape[0],-1))
+    return F.normalize(x, p=2, dim=1)
+
+
+class MarginNet(nn.Module):
+    def __init__(self, base_net, emb_dim, batch_k, normalize=False):
+        super().__init__()
+        self.conv = nn.Conv2d(1, 3, kernel_size=(1, 1))
+        self.base_net = base_net
+        in_dim = base_net.fc.out_features
+        self.emb_dim = emb_dim
+        self.dense1 = nn.Linear(in_dim, emb_dim)
+        self.normalize = l2_norm
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.base_net(x)  # renet18 embedding
+        x = self.dense1(x)
+        return x
+
+
+def pred(img_path, model, imshow=False, title=None):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    with torch.no_grad():
+        img = Image.open(os.path.join(img_path)).convert("L")
+        img = ImageOps.expand(img, (
+        (max(img.size) - img.size[0]) // 2, (max(img.size) - img.size[1]) // 2, (max(img.size) - img.size[0]) // 2,
+        (max(img.size) - img.size[1]) // 2), fill=255)
+        img = img.resize((100, 100))
+        img = np.asarray(img)
+        if imshow:
+            plt.imshow(img, cmap='gray')
+            plt.title(title)
+            plt.show()
+        to_tensor = transforms.ToTensor()
+        img = to_tensor(img)
+        img = img.unsqueeze(0)
+        img = img.to(device)
+        logo_feat = model(img)
+        logo_feat = l2_norm(logo_feat).squeeze(0).cpu().numpy()
+    return logo_feat
+
+
+def load_model():
+    basenet = models.__dict__['resnet50'](pretrained=True)
+    basenet.fc = nn.Linear(2048, 256)
+    ct = 0
+    for child in basenet.children():
+        ct += 1
+        if ct < 7:
+            for param in child.parameters():
+                param.requires_grad = False
+    model = MarginNet(base_net=basenet, emb_dim=emb_dim, batch_k=batch_k)
+    return model
+
+
+if __name__ == "__main__":
+
+    '''Configuration'''
+    batch_k = 5
+    emb_dim = 128
+    os.sep = '/'
+    model_name = './dws_checkpoint_gray_v6.pth.tar'
+    pair_path = './similar_pair/0/' # store the protected logos for 182 brands
+
+    '''Initialize model and load state dictionary'''
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = load_model()
+    if device == 'cpu':
+        model.load_state_dict(torch.load(model_name, map_location='cpu'))
+    else:
+        model.load_state_dict(torch.load(model_name))
+    model.to(device)
+    model.eval()
+
+    '''feed screenshot and most similar logo into network and get the embeddings'''
+    img_feat = pred(pair_path + 'cropped.png', model, imshow=True, title='Sampled Yolo box')
+    most_sim_logo_feat = pred(pair_path + 'pred_target.png', model, imshow=True, title="Most similar logo")
+    sim = most_sim_logo_feat.dot(img_feat)
+    print(sim)
+
+
+
+
+
+
+
+
+
