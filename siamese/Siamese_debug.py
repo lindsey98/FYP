@@ -102,8 +102,18 @@ def visualize_gradient_against_cosine():
 
     grad /= max
 
-    plt.matshow(grad.squeeze(0).squeeze(0).cpu())
-    plt.title('cosine similarity for source')
+    plt.imshow(img_o.squeeze(0).squeeze(0).cpu())
+    plt.title('processed source')
+    plt.show()
+
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu())
+    plt.title('gradient for source')
+    plt.show()
+
+    plt.imshow(img_o.squeeze(0).squeeze(0).cpu())
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu(), alpha=0.6, cmap='rainbow')
+    plt.title('mixed for source')
+    plt.show()
 
     model.load_state_dict(state_dict)
     img = Variable(img_s, requires_grad=True)
@@ -118,8 +128,17 @@ def visualize_gradient_against_cosine():
 
     grad /= max
 
-    plt.matshow(grad.squeeze(0).squeeze(0).cpu())
-    plt.title('cosine similarity for dest')
+    plt.imshow(img_s.squeeze(0).squeeze(0).cpu())
+    plt.title('processed dest')
+    plt.show()
+
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu())
+    plt.title('gradient for dest')
+    plt.show()
+
+    plt.imshow(img_s.squeeze(0).squeeze(0).cpu())
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu(), alpha=0.6, cmap='rainbow')
+    plt.title('mixed for dest')
     plt.show()
 
 
@@ -129,7 +148,7 @@ if __name__ == "__main__":
     emb_dim = 128
     os.sep = '/'
     model_name = './dws_checkpoint_gray_v6.pth.tar'
-    pair_path = './similar_pair_p_a_d/4/' # store the protected logos for 182 brands
+    pair_path = './similar_pair_p_a_d/0/' # store the protected logos for 182 brands
 
     '''Initialize model and load state dictionary'''
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -144,23 +163,6 @@ if __name__ == "__main__":
     img_s_path = pair_path + 'yolo_box.png'
 
     visualize_gradient_against_cosine()
-    # model.eval()
-
-
-
-# import cv2
-# cv2.imwrite('./test1.png', grad)
-#
-# print(img_o.squeeze(0))
-
-    # max = total.view(-1).max()
-    # min = total.view(-1).min()
-    #
-    # total -= min
-    # total /= (max - min)
-    #
-    # plt.matshow(total.squeeze(0).squeeze(0).cpu())
-    # plt.show()
 
 
 
