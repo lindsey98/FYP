@@ -79,10 +79,12 @@ def load_model():
 def visualize_gradient_against_cosine():
     model.load_state_dict(state_dict)
     model.to(device)
+    model.eval()
     '''feed screenshot and most similar logo into network and get the embeddings'''
     img_o_feat = pred(img_o_path, model, imshow=False, title='Sampled Yolo box')
     img_s_feat = pred(img_s_path, model, imshow=False, title="Most similar logo")
 
+    model.train()
     print(img_o_feat.dot(img_s_feat))
 
     img_o = procees_image(img_o_path, imshow=False, title=None)
@@ -102,15 +104,15 @@ def visualize_gradient_against_cosine():
 
     grad /= max
 
-    plt.imshow(img_o.squeeze(0).squeeze(0).cpu())
+    plt.imshow(img_o.squeeze(0).squeeze(0).cpu(), cmap='gray')
     plt.title('processed source')
     plt.show()
 
-    plt.imshow(grad.squeeze(0).squeeze(0).cpu())
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu(), cmap='rainbow')
     plt.title('gradient for source')
     plt.show()
 
-    plt.imshow(img_o.squeeze(0).squeeze(0).cpu())
+    plt.imshow(img_o.squeeze(0).squeeze(0).cpu(), cmap='gray')
     plt.imshow(grad.squeeze(0).squeeze(0).cpu(), alpha=0.6, cmap='rainbow')
     plt.title('mixed for source')
     plt.show()
@@ -128,15 +130,15 @@ def visualize_gradient_against_cosine():
 
     grad /= max
 
-    plt.imshow(img_s.squeeze(0).squeeze(0).cpu())
+    plt.imshow(img_s.squeeze(0).squeeze(0).cpu(), cmap='gray')
     plt.title('processed dest')
     plt.show()
 
-    plt.imshow(grad.squeeze(0).squeeze(0).cpu())
+    plt.imshow(grad.squeeze(0).squeeze(0).cpu(), cmap='rainbow')
     plt.title('gradient for dest')
     plt.show()
 
-    plt.imshow(img_s.squeeze(0).squeeze(0).cpu())
+    plt.imshow(img_s.squeeze(0).squeeze(0).cpu(), cmap='gray')
     plt.imshow(grad.squeeze(0).squeeze(0).cpu(), alpha=0.6, cmap='rainbow')
     plt.title('mixed for dest')
     plt.show()
@@ -148,11 +150,13 @@ if __name__ == "__main__":
     emb_dim = 128
     os.sep = '/'
     model_name = './dws_checkpoint_gray_v6.pth.tar'
-    pair_path = './similar_pair_p_a_d/0/' # store the protected logos for 182 brands
+    pair_path = './similar_pair/0/' # store the protected logos for 182 brands
 
     '''Initialize model and load state dictionary'''
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = load_model()
+
+    print(model)
 
     if device == 'cpu':
         state_dict = torch.load(model_name, map_location='cpu')
