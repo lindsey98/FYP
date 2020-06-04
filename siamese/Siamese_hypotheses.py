@@ -118,7 +118,7 @@ if __name__ == "__main__":
     feature_dict = dict()
 
     for i in range(32):
-        pair_path = './data/S_D/' + str(i) + '/'
+        pair_path = './data/D_S/' + str(i) + '/'
         img_o_path = pair_path + 'logo.png'
         img_s_path = pair_path + 'yolo_box.png'
         calculate_representitive_feature(img_o_path, img_s_path, feature_dict)
