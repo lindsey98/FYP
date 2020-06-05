@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 
 emb_dim = 128
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def l2_norm(x):
     if len(x.shape):
@@ -49,11 +49,10 @@ def load_model():
             for param in child.parameters():
                 param.requires_grad = False
     model = MarginNet(base_net=basenet, emb_dim=emb_dim)
-    return model
+    return model.to(device)
 
 
-def procees_image(img_path, imshow=False, title=None):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def procees_image(img_path):
     with torch.no_grad():
         img = Image.open(os.path.join(img_path)).convert("L")
         img = ImageOps.expand(img, (
@@ -61,11 +60,8 @@ def procees_image(img_path, imshow=False, title=None):
             (max(img.size) - img.size[1]) // 2), fill=255)
         img = img.resize((100, 100))
         img = np.asarray(img)
-        if imshow:
-            plt.imshow(img, cmap='gray')
-            plt.title(title)
-            plt.show()
+
         to_tensor = transforms.ToTensor()
         img = to_tensor(img)
         img = img.unsqueeze(0)
-        return img.to(device)
+        return Variable(img.to(device), requires_grad=True)

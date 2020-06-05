@@ -9,8 +9,8 @@ import torch
 from siamese.Siamese import load_model, procees_image
 
 
-def pred(img_path, model, imshow=False, title=None):
-    img = procees_image(img_path, imshow=False, title=None)
+def pred(img_path, model):
+    img = procees_image(img_path)
     img = Variable(img)
     logo_feat = model(img)
 
@@ -22,14 +22,14 @@ def visualize_gradient_against_cosine():
     model.to(device)
     model.eval()
     '''feed screenshot and most similar logo into network and get the embeddings'''
-    img_o_feat = pred(img_o_path, model, imshow=False, title='Sampled Yolo box')
-    img_s_feat = pred(img_s_path, model, imshow=False, title="Most similar logo")
+    img_o_feat = pred(img_o_path, model)
+    img_s_feat = pred(img_s_path, model)
 
     model.train()
     print(img_o_feat.dot(img_s_feat))
 
-    img_o = procees_image(img_o_path, imshow=False, title=None)
-    img_s = procees_image(img_s_path, imshow=False, title=None)
+    img_o = procees_image(img_o_path)
+    img_s = procees_image(img_s_path)
 
     # From src to dest
     model.train()

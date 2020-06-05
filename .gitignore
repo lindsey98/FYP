@@ -7,5 +7,6 @@ siamese/similar_pair
 
 data/
 
+__pycache__/
 
 .ipynb_checkpoints/
