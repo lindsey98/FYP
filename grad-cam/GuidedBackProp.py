@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import torch
 from torch.autograd import Function, Variable
+import matplotlib.pyplot as plt
 
 from siamese.Siamese import load_model, procees_image
 
@@ -57,7 +58,7 @@ def deprocess_image(img):
     return np.uint8(img * 255)
 
 
-def generate_GB_result(gb_model, input_s, input_o, output_path):
+def generate_GB_result(gb_model, input_o, input_s, output_path):
     output_s = model.forward(input_s).squeeze(0)
 
     output_o = gb_model.forward(input_o).squeeze(0)
@@ -75,11 +76,24 @@ def generate_GB_result(gb_model, input_s, input_o, output_path):
 
     gb = deprocess_image(gb)
 
-    cv2.imwrite(output_path, gb)
+    # cv2.imwrite(output_path, gb)
+    #
+    # input_processed = np.uint8(input_o.cpu().data.numpy()[0, :, :, :].transpose((1, 2, 0)) * 255)
+    #
+    # cv2.imwrite('raw_'+ output_path, input_processed)
 
-    input_processed = np.uint8(input_o.cpu().data.numpy()[0, :, :, :].transpose((1, 2, 0)) * 255)
+    plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
+    plt.title('processed source')
+    plt.show()
 
-    cv2.imwrite('raw_'+ output_path, input_processed)
+    plt.imshow(gb.squeeze(2), cmap='rainbow')
+    plt.title('gradient for source')
+    plt.show()
+
+    plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
+    plt.imshow(gb.squeeze(2), alpha=0.6, cmap='rainbow')
+    plt.title('mixed for source')
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -89,7 +103,7 @@ if __name__ == '__main__':
     else:
         state_dict = torch.load(model_name)
 
-    pair_path = "../siamese/data/D_S/0/"
+    pair_path = "../siamese/data/S_D/2/"
 
     img_s_path = pair_path + 'logo.png'
     img_o_path = pair_path + 'yolo_box.png'
