@@ -4,7 +4,7 @@ import torch
 from torch.autograd import Function, Variable
 import matplotlib.pyplot as plt
 
-from siamese.Siamese import load_model, procees_image
+from siamese.Siamese import load_model, process_image
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -112,8 +112,8 @@ if __name__ == '__main__':
     model.to(device)
     model.load_state_dict(state_dict)
 
-    input_o = procees_image(img_o_path)
-    input_s = procees_image(img_s_path)
+    input_o = process_image(img_o_path)
+    input_s = process_image(img_s_path)
 
     model.eval()
     gb_model = GuidedBackpropReLUModel(model=model)

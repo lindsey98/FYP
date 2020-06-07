@@ -9,11 +9,11 @@ from torch import nn, autograd
 import torch.nn.functional as F
 import torch
 
-from siamese.Siamese import load_model, procees_image
+from siamese.Siamese import load_model, process_image
 
 
 def pred(img_path, model, imshow=False, title=None):
-    img = procees_image(img_path, imshow=imshow, title=title)
+    img = process_image(img_path, imshow=imshow, title=title)
     img = Variable(img)
     logo_feat = model(img)
 

@@ -6,11 +6,11 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 import torch
 
-from siamese.Siamese import load_model, procees_image
+from siamese.Siamese import load_model, process_image
 
 
 def pred(img_path, model):
-    img = procees_image(img_path)
+    img = process_image(img_path)
     img = Variable(img)
     logo_feat = model(img)
 
@@ -28,8 +28,8 @@ def visualize_gradient_against_cosine():
     model.train()
     print(img_o_feat.dot(img_s_feat))
 
-    img_o = procees_image(img_o_path)
-    img_s = procees_image(img_s_path)
+    img_o = process_image(img_o_path)
+    img_s = process_image(img_s_path)
 
     # From src to dest
     model.train()

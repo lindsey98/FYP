@@ -52,7 +52,7 @@ def load_model():
     return model.to(device)
 
 
-def procees_image(img_path):
+def process_image(img_path):
     with torch.no_grad():
         img = Image.open(os.path.join(img_path)).convert("L")
         img = ImageOps.expand(img, (
