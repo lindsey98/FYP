@@ -1,5 +1,6 @@
 import torch
 from torch.autograd import Function
+import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -41,3 +42,16 @@ class GuidedBackPropReLUModel:
 
     def forward(self, input):
         return self.model(input)
+
+    def feature(self, input):
+        return self.feature(input)
+
+
+def deprocess_image(img):
+    """ see https://github.com/jacobgil/keras-grad-cam/blob/master/grad-cam.py#L65 """
+    img = img - np.mean(img)
+    img = img / (np.std(img) + 1e-5)
+    img = img * 0.1
+    img = img + 0.5
+    img = np.clip(img, 0, 1)
+    return np.uint8(img * 255)

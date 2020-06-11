@@ -1,18 +1,20 @@
 import cv2
+import numpy as np
 import torch
+from torch.autograd import Function, Variable
 import matplotlib.pyplot as plt
 
-from grad_cam.GuidedBackPropReLUModel import GuidedBackPropReLUModel, deprocess_image
-from siamese.Siamese import load_model, process_image
-
+from grad_cam.GuidedBackPropReLUModel import deprocess_image, GuidedBackPropReLUModel
+from siamese.NewSiamese import load_model, process_image
+from siamese.NewSiamese_debug import l2_norm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def generate_GB_result(gb_model, input_o, input_s, output_path):
-    output_s = model.forward(input_s).squeeze(0)
+    output_s = l2_norm(model.features(input_s)).squeeze(0)
 
-    output_o = gb_model.forward(input_o).squeeze(0)
+    output_o = l2_norm(gb_model.features(input_s)).squeeze(0)
 
     one_hot = output_o.dot(output_s)
 
@@ -48,20 +50,21 @@ def generate_GB_result(gb_model, input_o, input_s, output_path):
 
 
 if __name__ == '__main__':
-    model_name = '../siamese/dws_checkpoint_gray_v6.pth.tar'
+    classes = 180
+    model_name = '../siamese/rgb_ar.pth'  ## RGB model
     if device == 'cpu':
         state_dict = torch.load(model_name, map_location='cpu')
     else:
         state_dict = torch.load(model_name)
 
-    pair_path = "../siamese/data/S_D/2/"
+    pair_path = "./data/DD/2/"
 
     img_s_path = pair_path + 'logo.png'
-    img_o_path = pair_path + 'yolo_box.png'
+    img_o_path = pair_path + 'cropped.png'
 
-    model = load_model()
+    model = load_model(classes, model_name)
     model.to(device)
-    model.load_state_dict(state_dict)
+    # model.load_state_dict(state_dict)
 
     input_o = process_image(img_o_path)
     input_s = process_image(img_s_path)
