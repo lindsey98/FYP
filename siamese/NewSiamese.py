@@ -71,13 +71,12 @@ class PreActBottleneck(nn.Module):
         self.conv2 = conv3x3(cmid, cmid, stride)  # Original code has it on conv1!!
         self.gn3 = nn.GroupNorm(32, cmid)
         self.conv3 = conv1x1(cmid, cout)
-        self.relu = nn.ReLU(inplace=True)
 
         if (stride != 1 or cin != cout):
             self.downsample = conv1x1(cin, cout, stride)  # Projection also with pre-activation according to paper.
 
     def forward(self, x):
-        out = self.relu(self.gn1(x))
+        out = F.relu(self.gn1(x))
 
         # Residual branch
         residual = x
@@ -86,8 +85,8 @@ class PreActBottleneck(nn.Module):
 
         # Unit's branch
         out = self.conv1(out)
-        out = self.conv2(self.relu(self.gn2(out)))
-        out = self.conv3(self.relu(self.gn3(out)))
+        out = self.conv2(F.relu(self.gn2(out)))
+        out = self.conv3(F.relu(self.gn3(out)))
 
         return out + residual
 
