@@ -1,4 +1,5 @@
 import torch
+from torch import nn
 from torch.autograd import Function
 import numpy as np
 
@@ -26,6 +27,14 @@ class GuidedBackPropReLU(Function):
         return grad_input
 
 
+class GuidedBackPropReLUModule(nn.Module):
+    def __init__(self):
+        super(GuidedBackPropReLUModule, self).__init__()
+
+    def forward(self, x):
+        return GuidedBackPropReLU.apply(x)
+
+
 class GuidedBackPropReLUModel:
     def __init__(self, model):
         self.model = model
@@ -35,7 +44,7 @@ class GuidedBackPropReLUModel:
             for idx, module in module_top._modules.items():
                 recursive_relu_apply(module)
                 if module.__class__.__name__ == 'ReLU':
-                    module_top._modules[idx] = GuidedBackPropReLU.apply
+                    module_top._modules[idx] = GuidedBackPropReLUModule()
 
         # replace ReLU with GuidedBackpropReLU
         recursive_relu_apply(self.model)
@@ -43,8 +52,8 @@ class GuidedBackPropReLUModel:
     def forward(self, input):
         return self.model(input)
 
-    def feature(self, input):
-        return self.feature(input)
+    def features(self, input):
+        return self.model.features(input)
 
 
 def deprocess_image(img):

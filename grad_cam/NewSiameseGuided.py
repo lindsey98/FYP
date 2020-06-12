@@ -73,6 +73,8 @@ class PreActBottleneck(nn.Module):
         self.conv3 = conv1x1(cmid, cout)
         self.relu = nn.ReLU(inplace=True)
 
+        self.relu = F.relu()
+
         if (stride != 1 or cin != cout):
             self.downsample = conv1x1(cin, cout, stride)  # Projection also with pre-activation according to paper.
 

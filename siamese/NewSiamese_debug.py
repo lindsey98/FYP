@@ -23,8 +23,8 @@ def pred(img_path, model, imshow=False, title=None, path=True, grayscale=True):
 
 if __name__ == "__main__":
     
-    cropped_path = '../grad-cam/data/SD/0/cropped.png' ## change this
-    logo_path = '../grad-cam/data/SD/0/logo.png' ## change this
+    cropped_path = '../grad_cam/data/SD/0/cropped.png' ## change this
+    logo_path = '../grad_cam/data/SD/0/logo.png' ## change this
     
     ### model configuration
     classes = 180
@@ -35,7 +35,11 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = load_model(classes, model_name)
     model.to(device)
-    model.eval()    
+    model.eval()
+
+    for idx, module in model._modules.items():
+        print(idx)
+        print(model)
     
     ## prediction
     crop_feat = pred(cropped_path, model, imshow=True, title='Cropped image', path=True, grayscale=grayscale)

@@ -14,7 +14,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def generate_GB_result(gb_model, input_o, input_s, output_path):
     output_s = l2_norm(model.features(input_s)).squeeze(0)
 
-    output_o = l2_norm(gb_model.features(input_s)).squeeze(0)
+    output_o = l2_norm(gb_model.features(input_o)).squeeze(0)
 
     one_hot = output_o.dot(output_s)
 
@@ -29,24 +29,24 @@ def generate_GB_result(gb_model, input_o, input_s, output_path):
 
     gb = deprocess_image(gb)
 
-    # cv2.imwrite(output_path, gb)
+    cv2.imwrite(output_path, gb)
+
+    input_processed = np.uint8(input_o.cpu().data.numpy()[0, :, :, :].transpose((1, 2, 0)) * 255)
+
+    cv2.imwrite('raw_'+ output_path, input_processed)
+
+    # plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
+    # plt.title('processed source')
+    # plt.show()
     #
-    # input_processed = np.uint8(input_o.cpu().data.numpy()[0, :, :, :].transpose((1, 2, 0)) * 255)
+    # plt.imshow(gb.squeeze(2), cmap='rainbow')
+    # plt.title('gradient for source')
+    # plt.show()
     #
-    # cv2.imwrite('raw_'+ output_path, input_processed)
-
-    plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
-    plt.title('processed source')
-    plt.show()
-
-    plt.imshow(gb.squeeze(2), cmap='rainbow')
-    plt.title('gradient for source')
-    plt.show()
-
-    plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
-    plt.imshow(gb.squeeze(2), alpha=0.6, cmap='rainbow')
-    plt.title('mixed for source')
-    plt.show()
+    # plt.imshow(input_o.squeeze(0).squeeze(0).cpu().detach(), cmap='gray')
+    # plt.imshow(gb.squeeze(2), alpha=0.6, cmap='rainbow')
+    # plt.title('mixed for source')
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     else:
         state_dict = torch.load(model_name)
 
-    pair_path = "./data/DD/2/"
+    pair_path = "./data/DS/13/"
 
     img_s_path = pair_path + 'logo.png'
     img_o_path = pair_path + 'cropped.png'
