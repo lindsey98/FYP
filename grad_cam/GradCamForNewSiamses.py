@@ -63,8 +63,8 @@ if __name__ == '__main__':
     model.to(device)
     model.eval()
 
-    input_o = process_image(img_o_path)
-    input_s = process_image(img_s_path)
+    input_o = process_image(img_o_path, grayscale=False)
+    input_s = process_image(img_s_path, grayscale=False)
 
     grad_cam_model = GradCamForNewSiamese(model=model, feature_module=model.body.block4, target_layer_names=["unit03"])
 
