@@ -52,10 +52,6 @@ def generate_GB_result(gb_model, input_o, input_s, output_path):
 if __name__ == '__main__':
     classes = 180
     model_name = '../siamese/rgb_ar.pth'  ## RGB model
-    if device == 'cpu':
-        state_dict = torch.load(model_name, map_location='cpu')
-    else:
-        state_dict = torch.load(model_name)
 
     pair_path = "./data/DS/13/"
 
