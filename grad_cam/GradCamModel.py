@@ -33,7 +33,7 @@ class FeatureExtractor():
         return outputs, x
 
 
-class ModelOutputs():
+class ModelOutputsForOldSiamese():
     """ Class for making a forward pass, and getting:
     1. The network output.
     2. Activations from intermeddiate targetted layers.
@@ -64,13 +64,13 @@ class ModelOutputs():
         return target_activations, x
 
 
-class GradCam:
+class GradCamForOldSiamese:
     def __init__(self, model, feature_module, target_layer_names):
         self.model = model.to(device)
         self.feature_module = feature_module
         self.model.eval()
 
-        self.extractor = ModelOutputs(self.model, self.feature_module, target_layer_names)
+        self.extractor = ModelOutputsForOldSiamese(self.model, self.feature_module, target_layer_names)
 
     def forward(self, input):
         return self.model(input)
