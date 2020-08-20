@@ -47,8 +47,6 @@ a = torch.cat([img_transform(Image.fromarray(i.numpy(), mode='L')) for i in data
 
 b = dataset.targets[:2000]
 
-print(b.size())
-print(b.dtype)
 
 x, y, z = model(a.view(2000, -1).cuda())
 
