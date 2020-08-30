@@ -5,6 +5,7 @@ colorama==0.4.3
 decorator==4.4.2
 defusedxml==0.6.0
 entrypoints==0.3
+future==0.18.2
 importlib-metadata==1.6.0
 ipykernel==5.2.1
 ipython==7.13.0
@@ -46,8 +47,8 @@ six==1.14.0
 sklearn==0.0
 terminado==0.8.3
 testpath==0.4.4
-torch==1.4.0
-torchvision==0.5.0
+torch==1.6.0
+torchvision==0.7.0
 tornado==6.0.4
 traitlets==4.3.3
 virtualenv==16.7.7

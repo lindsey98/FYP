@@ -1,49 +1,39 @@
-from torch import nn, optim, save, load
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import MNIST
+from torch import optim, save, load
+
 import torch.nn.functional as F
 import torch
 
+from TBNN.model import PaperModel, MINST_3
 
-class TestModel(nn.Module):
-    def __init__(self):
-        super(TestModel, self).__init__()
-        self.hidden1 = nn.Linear(784, 784)
-        self.hidden2 = nn.Linear(784, 784)
-        self.output = nn.Linear(784, 10)
-
-    def forward(self, x):
-        x = self.hidden1(x)
-        x = F.relu(x)
-        x = self.hidden2(x)
-        x = F.relu(x)
-        x = self.output(x)
-        x = F.log_softmax(x, dim=1)
-        return x
-
-
-num_epochs = 50
-batch_size = 128
-learning_rate = 1e-3
+num_epochs = 100
+batch_size = 100
+learning_rate = 0.001
 
 img_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])
 ])
 
-dataset = MNIST('./data', transform=img_transform)
-dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+train_dataset = MNIST('./data', transform=img_transform)
+train_dataset, validation_dataset = torch.utils.data.random_split(train_dataset, [50000, 10000])
+train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-model = TestModel().cuda()
+test_dataset = MNIST('./data', transform=img_transform, train=False)
+test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+model = MINST_3().cuda()
 optimizer = optim.Adam(
     model.parameters(), lr=learning_rate, weight_decay=1e-5)
+
 
 def train():
     model.train()
     for epoch in range(num_epochs):
-        for data in dataloader:
+        for data in train_data_loader:
             img, label = data
             img = img.view(img.size(0), -1)
             img = Variable(img).cuda()
@@ -59,16 +49,16 @@ def train():
 
         print('epoch [{}/{}], loss:{:.4f}'
               .format(epoch + 1, num_epochs, loss.data))
-    save(model.state_dict(), './my_test_model.pth')
+    save(model.state_dict(), './MINST-3.pth')
 
 
 def test():
-    model.load_state_dict(load('./my_test_model.pth'))
+    model.load_state_dict(load('./MINST-3.pth'))
     model.eval()
     test_loss = 0
     correct = 0
     with torch.no_grad():
-        for data, target in dataloader:
+        for data, target in test_data_loader:
             data = data.view(data.size(0), -1).cuda()
             output = model(data)
 
@@ -76,14 +66,13 @@ def test():
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.cuda().view_as(pred)).sum().item()
 
-    test_loss /= len(dataloader.dataset)
+    test_loss /= len(test_data_loader.dataset)
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(dataloader.dataset),
-        100. * correct / len(dataloader.dataset)))
+        test_loss, correct, len(test_data_loader.dataset),
+        100. * correct / len(test_data_loader.dataset)))
 
 
 if __name__ == '__main__':
-    for parameter in model.parameters():
-        print(1)
-    print(model.parameters()[1])
+    train()
+    test()
