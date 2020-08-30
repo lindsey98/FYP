@@ -21,12 +21,14 @@ class NeuronCoverageReLUModel:
         self.model = model.to(device)
 
         self.forward_map = dict()
+        self.mode = "normal"
 
         def forward_hook_fn(module, input, output):
-            zero = torch.zeros_like(input[0], dtype=torch.int)
-            one = torch.ones_like(input[0], dtype=torch.int)
-            new_input = torch.where(input[0] > 0, one, zero)
-            self.forward_map[module.name] = new_input
+            if self.mode == "coverage":
+                zero = torch.zeros_like(input[0], dtype=torch.int)
+                one = torch.ones_like(input[0], dtype=torch.int)
+                new_input = torch.where(input[0] > 0, one, zero)
+                self.forward_map[module.name] = new_input
 
         for name, top_module in self.model.named_children():
             for idx, module in top_module._modules.items():
@@ -40,9 +42,19 @@ class NeuronCoverageReLUModel:
 
     def train(self):
         self.model.train()
+        self.mode = "normal"
 
     def eval(self):
         self.model.eval()
+        self.mode = "normal"
+
+    def coverage(self):
+        self.model.eval()
+        self.mode = "coverage"
+
+    def freeze_train(self):
+        self.model.train()
+        self.mode = "freeze"
 
     def parameters(self):
         return self.model.parameters()

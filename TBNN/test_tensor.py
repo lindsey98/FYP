@@ -46,6 +46,7 @@ with torch.no_grad():
 
         correct += correct_pred.sum().item()
 
+print(neuron_activation_map_correct)
 length = len(test_data_loader.dataset)
 test_loss /= length
 
