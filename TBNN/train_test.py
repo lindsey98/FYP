@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import torch
 
 from TBNN.model import PaperModel, MINST_3
+from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
 
 num_epochs = 100
 batch_size = 100
@@ -26,9 +27,11 @@ test_dataset = MNIST('./data', transform=img_transform, train=False)
 test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 model = MINST_3().cuda()
+
+model = NeuronCoverageReLUModel(model)
+
 optimizer = optim.Adam(
     model.parameters(), lr=learning_rate, weight_decay=1e-5)
-
 
 def train():
     model.train()
@@ -40,7 +43,7 @@ def train():
 
             # ===================forward=====================
             optimizer.zero_grad()
-            output = model(img)
+            output, _ = model.forward(img)
 
             loss = F.nll_loss(output, label.cuda())
             # ===================backward====================
@@ -49,11 +52,11 @@ def train():
 
         print('epoch [{}/{}], loss:{:.4f}'
               .format(epoch + 1, num_epochs, loss.data))
-    save(model.state_dict(), './MINST-3.pth')
+    save(model.state_dict(), './MINST-3-1.pth')
 
 
 def test():
-    model.load_state_dict(load('./MINST-3.pth'))
+    model.load_state_dict(load('./MINST-3-1.pth'))
     model.eval()
     test_loss = 0
     correct = 0

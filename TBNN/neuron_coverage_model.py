@@ -37,3 +37,15 @@ class NeuronCoverageReLUModel:
 
     def forward(self, x):
         return self.model.forward(x), self.forward_map
+
+    def train(self):
+        self.model.train()
+
+    def eval(self):
+        self.model.eval()
+
+    def parameters(self):
+        return self.model.parameters()
+
+    def load_state_dict(self, state_dict):
+        self.model.load_state_dict(state_dict)
