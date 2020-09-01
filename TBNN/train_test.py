@@ -12,7 +12,7 @@ from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
 
 num_epochs = 100
 batch_size = 100
-learning_rate = 0.001
+learning_rate = 0.0001
 
 img_transform = transforms.Compose([
     transforms.ToTensor(),
