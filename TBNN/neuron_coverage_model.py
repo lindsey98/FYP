@@ -24,14 +24,14 @@ class NeuronCoverageReLUModel:
         self.mode = "normal"
 
         def forward_hook_fn(module, input, output):
-            if self.mode == "coverage":
+            if self.mode == "coverage" or self.mode == "combined":
                 zero = torch.zeros_like(input[0], dtype=torch.int)
                 one = torch.ones_like(input[0], dtype=torch.int)
                 new_input = torch.where(input[0] > 0, one, zero)
                 self.neuron_activation_map[module.name] = new_input
 
         def backward_hook_fn(module, grad_in, grad_out):
-            if self.mode == "freeze":
+            if self.mode == "freeze" or self.mode == "combined":
                 mask = self.non_frozen_neuron_map.get(module.name)
                 if mask is not None:
                     new_grad_in = grad_in[0] * mask
@@ -63,6 +63,10 @@ class NeuronCoverageReLUModel:
     def freeze_train(self):
         self.model.train()
         self.mode = "freeze"
+
+    def combined(self):
+        self.model.train()
+        self.mode = "combined"
 
     def parameters(self):
         return self.model.parameters()
