@@ -1,11 +1,26 @@
+import random
+
 import torch
 from torch.autograd import Variable
 import torch.nn.functional as F
+import numpy as np
+from torch.backends import cudnn
 
 from TBNN.dataset import minst_data_loader_train, minst_data_loader_test
 from TBNN.model import MINST_3, MINST_8
 from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
 
+
+def setup_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    cudnn.deterministic = True
+
+
+setup_seed(1914)
 batch_size = 128
 num_epochs = 200
 learning_rate = 0.0001
@@ -208,6 +223,5 @@ def test():
 
 
 if __name__ == '__main__':
-    coverage()
-    combined_train(10)
+    combined_train(100)
     test()
