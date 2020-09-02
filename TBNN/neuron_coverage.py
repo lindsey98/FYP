@@ -10,7 +10,7 @@ batch_size = 128
 num_epochs = 200
 learning_rate = 0.0001
 model = NeuronCoverageReLUModel(MINST_3())
-model.load_state_dict(torch.load('./MINST-3.pth'))
+model.load_state_dict(torch.load('./states/MINST-3.pth'))
 
 train_data_loader = minst_data_loader_train(batch_size)
 test_data_loader = minst_data_loader_test(batch_size)
@@ -84,7 +84,7 @@ def freeze_train(epochs):
 
         total_train_loss /= length
         print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, epochs, total_train_loss, total_correct, length))
-    torch.save(model.state_dict(), './MINST-3-A.pth')
+    torch.save(model.state_dict(), './states/MINST-3-A.pth')
 
 
 def test():

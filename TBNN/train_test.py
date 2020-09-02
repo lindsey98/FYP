@@ -27,7 +27,7 @@ test_data_loader = minst_data_loader_test(batch_size)
 
 
 def train():
-    model.load_state_dict(load('./MINST-3.pth'))
+    model.load_state_dict(load('./states/MINST-3.pth'))
     model.train()
     length = len(train_data_loader.dataset)
     for epoch in range(num_epochs):
@@ -50,11 +50,11 @@ def train():
 
         total_train_loss /= length
         print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-    save(model.state_dict(), './MINST-3-1.pth')
+    save(model.state_dict(), './states/MINST-3-1.pth')
 
 
 def test():
-    model.load_state_dict(load('./MINST-3-1.pth'))
+    model.load_state_dict(load('./states/MINST-3-1.pth'))
     model.eval()
     test_loss = 0
     correct = 0
