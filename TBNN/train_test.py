@@ -11,7 +11,7 @@ from TBNN.dataset import minst_data_loader_test, minst_data_loader_train
 from TBNN.model import PaperModel, MINST_3
 from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
 
-num_epochs = 100
+num_epochs = 15
 batch_size = 100
 learning_rate = 0.0001
 
@@ -27,24 +27,29 @@ test_data_loader = minst_data_loader_test(batch_size)
 
 
 def train():
+    model.load_state_dict(load('./MINST-3.pth'))
     model.train()
+    length = len(train_data_loader.dataset)
     for epoch in range(num_epochs):
+        total_train_loss = 0
+        total_correct = 0
         for data in train_data_loader:
-            img, label = data
-            img = img.view(img.size(0), -1)
-            img = Variable(img).cuda()
+            img, target = data
+            img = Variable(img.view(img.size(0), -1)).cuda()
 
-            # ===================forward=====================
             optimizer.zero_grad()
-            output, _ = model.forward(img)
+            output = model.forward(img)
 
-            loss = F.nll_loss(output, label.cuda())
-            # ===================backward====================
+            loss = F.nll_loss(output, target.cuda())
             loss.backward()
             optimizer.step()
 
-        print('epoch [{}/{}], loss:{:.4f}'
-              .format(epoch + 1, num_epochs, loss.data))
+            total_train_loss += F.nll_loss(output, target.cuda(), reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            total_correct += pred.eq(target.cuda().view_as(pred)).sum().item()
+
+        total_train_loss /= length
+        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
     save(model.state_dict(), './MINST-3-1.pth')
 
 
