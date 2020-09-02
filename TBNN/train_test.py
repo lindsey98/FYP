@@ -1,12 +1,13 @@
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from torchvision import transforms
+
 from torchvision.datasets import MNIST
 from torch import optim, save, load
 
 import torch.nn.functional as F
 import torch
 
+from TBNN.dataset import minst_data_loader_test, minst_data_loader_train
 from TBNN.model import PaperModel, MINST_3
 from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
 
@@ -14,24 +15,16 @@ num_epochs = 100
 batch_size = 100
 learning_rate = 0.0001
 
-img_transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize([0.5], [0.5])
-])
-
-train_dataset = MNIST('./data', transform=img_transform)
-train_dataset, validation_dataset = torch.utils.data.random_split(train_dataset, [50000, 10000])
-train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
-test_dataset = MNIST('./data', transform=img_transform, train=False)
-test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
 model = MINST_3().cuda()
 
 model = NeuronCoverageReLUModel(model)
 
 optimizer = optim.Adam(
     model.parameters(), lr=learning_rate, weight_decay=1e-5)
+
+train_data_loader = minst_data_loader_train(batch_size)
+test_data_loader = minst_data_loader_test(batch_size)
+
 
 def train():
     model.train()

@@ -1,25 +1,24 @@
 import torch
 from torch.autograd import Variable
-from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
 import torch.nn.functional as F
 
+from TBNN.dataset import minst_data_loader_train, minst_data_loader_test
 from TBNN.model import MINST_3, MINST_8
 from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
-from TBNN.train_test import img_transform, num_epochs, train_data_loader, learning_rate
 
 batch_size = 128
-model = MINST_3()
-model = NeuronCoverageReLUModel(model)
-
+num_epochs = 200
+learning_rate = 0.0001
+model = NeuronCoverageReLUModel(MINST_3())
 model.load_state_dict(torch.load('./MINST-3.pth'))
-model.coverage()
 
-test_dataset = MNIST('./data', transform=img_transform, train=False)
-test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+train_data_loader = minst_data_loader_train(batch_size)
+test_data_loader = minst_data_loader_test(batch_size)
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
 
 def coverage():
+    model.coverage()
     test_loss = 0
     correct = 0
 
@@ -62,27 +61,29 @@ def coverage():
         model.non_frozen_neuron_map[name] = (contribution_ratio < 0.5).int()
 
 
-def freeze_train():
+def freeze_train(epochs):
     model.freeze_train()
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=learning_rate, weight_decay=1e-5)
-    for epoch in range(10):
+    length = len(train_data_loader.dataset)
+    for epoch in range(epochs):
+        total_train_loss = 0
+        total_correct = 0
         for data in train_data_loader:
-            img, label = data
-            img = img.view(img.size(0), -1)
-            img = Variable(img).cuda()
+            img, target = data
+            img = Variable(img.view(img.size(0), -1)).cuda()
 
-            # ===================forward=====================
             optimizer.zero_grad()
             output = model.forward(img)
 
-            loss = F.nll_loss(output, label.cuda())
-            # ===================backward====================
+            loss = F.nll_loss(output, target.cuda())
             loss.backward()
             optimizer.step()
 
-        print('epoch [{}/{}], loss:{:.4f}'
-              .format(epoch + 1, num_epochs, loss.data))
+            total_train_loss += F.nll_loss(output, target.cuda(), reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            total_correct += pred.eq(target.cuda().view_as(pred)).sum().item()
+
+        total_train_loss /= length
+        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, epochs, total_train_loss, total_correct, length))
     torch.save(model.state_dict(), './MINST-3-A.pth')
 
 
@@ -106,5 +107,5 @@ def test():
 
 if __name__ == '__main__':
     coverage()
-    freeze_train()
+    freeze_train(10)
     test()
