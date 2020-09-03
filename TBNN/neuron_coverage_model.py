@@ -110,7 +110,7 @@ class NeuronCoverageReLUModel:
             total_train_loss /= length
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             f.write('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}\n'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-
+            f.flush()
         f.close()
         if save_to is not None:
             torch.save(self.state_dict(), save_to)
@@ -148,8 +148,10 @@ class NeuronCoverageReLUModel:
                 correct_pred = pred.eq(target).int()
 
                 for name, neuron_activation in self.neuron_activation_map.items():
-                    pred_neuron_activation_correct = (neuron_activation * correct_pred).sum(axis=0)
-                    pred_neuron_activation_wrong = (neuron_activation * (1 - correct_pred)).sum(axis=0)
+                    shape = neuron_activation.shape[1:]
+                    neuron_activation = neuron_activation.view(correct_pred.shape[0], -1)
+                    pred_neuron_activation_correct = (neuron_activation * correct_pred).sum(axis=0).view(shape)
+                    pred_neuron_activation_wrong = (neuron_activation * (1 - correct_pred)).sum(axis=0).view(shape)
 
                     if neuron_activation_map_correct.get(name) is None:
                         neuron_activation_map_correct[name] = pred_neuron_activation_correct
@@ -164,6 +166,7 @@ class NeuronCoverageReLUModel:
             total_train_loss /= length
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             f.write('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}\n'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+            f.flush()
             for name, activation_map_correct in neuron_activation_map_correct.items():
                 activation_map_wrong = neuron_activation_map_wrong[name]
 

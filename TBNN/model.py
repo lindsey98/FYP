@@ -213,9 +213,11 @@ class MINST_9(nn.Module):
         )
 
     def forward(self, x):
+        x = x.reshape(x.shape[0], 1, 28, 28)
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
         x = self.dense(x)
         x = F.log_softmax(x, dim=1)
         return x
