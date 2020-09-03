@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -79,3 +80,118 @@ class NeuronCoverageReLUModel:
 
     def __call__(self, x):
         return self.forward(x)
+
+    def normal_train(self, num_epochs, data_loader, optimizer, load_from=None, save_to=None, log_address="./log/default.txt"):
+        self.train()
+        length = len(data_loader.dataset)
+        if load_from is not None:
+            self.load_state_dict(torch.load(load_from))
+
+        f = open(log_address, "a")
+
+        for epoch in range(num_epochs):
+            total_train_loss = 0
+            total_correct = 0
+            for data, target in data_loader:
+                data, target = data.to(device), target.to(device)
+                data = Variable(data.view(data.size(0), -1))
+
+                optimizer.zero_grad()
+                output = self.forward(data)
+
+                loss = F.nll_loss(output, target)
+                loss.backward()
+                optimizer.step()
+
+                total_train_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                total_correct += pred.eq(target.view_as(pred)).sum().item()
+
+            total_train_loss /= length
+            print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+            f.write('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}\n'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+
+        f.close()
+        if save_to is not None:
+            torch.save(self.state_dict(), save_to)
+
+    def combined_train(self, num_epochs, data_loader, optimizer, load_from=None, save_to=None, log_address="./log/default.txt"):
+        self.combined()
+        length = len(data_loader.dataset)
+        if load_from is not None:
+            self.load_state_dict(torch.load(load_from))
+
+        f = open(log_address, "a")
+        for epoch in range(num_epochs):
+            total_train_loss = 0
+            total_correct = 0
+
+            neuron_activation_map_correct = dict()
+            neuron_activation_map_wrong = dict()
+
+            for data, target in data_loader:
+                data, target = data.to(device), target.to(device)
+                data = Variable(data.view(data.size(0), -1))
+
+                optimizer.zero_grad()
+                output = self.forward(data)
+
+                loss = F.nll_loss(output, target)
+                loss.backward()
+                optimizer.step()
+
+                total_train_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                total_correct += pred.eq(target.view_as(pred)).sum().item()
+
+                target = target.view_as(pred)
+                correct_pred = pred.eq(target).int()
+
+                for name, neuron_activation in self.neuron_activation_map.items():
+                    pred_neuron_activation_correct = (neuron_activation * correct_pred).sum(axis=0)
+                    pred_neuron_activation_wrong = (neuron_activation * (1 - correct_pred)).sum(axis=0)
+
+                    if neuron_activation_map_correct.get(name) is None:
+                        neuron_activation_map_correct[name] = pred_neuron_activation_correct
+                    else:
+                        neuron_activation_map_correct[name] += pred_neuron_activation_correct
+
+                    if neuron_activation_map_wrong.get(name) is None:
+                        neuron_activation_map_wrong[name] = pred_neuron_activation_wrong
+                    else:
+                        neuron_activation_map_wrong[name] += pred_neuron_activation_wrong
+
+            total_train_loss /= length
+            print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+            f.write('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}\n'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+            for name, activation_map_correct in neuron_activation_map_correct.items():
+                activation_map_wrong = neuron_activation_map_wrong[name]
+
+                contribution = (activation_map_correct.double() / total_correct) / (
+                        (activation_map_wrong + 1).double() / (length - total_correct))
+                contribution_ratio = 1 - 1 / (contribution + 1)
+                self.non_frozen_neuron_map[name] = (contribution_ratio < 0.5).int()
+
+        f.close()
+        if save_to is not None:
+            torch.save(self.state_dict(), save_to)
+
+    def normal_test(self, data_loader, load_from=None):
+        self.eval()
+        if load_from is not None:
+            self.load_state_dict(torch.load(load_from))
+        test_loss = 0
+        correct = 0
+        with torch.no_grad():
+            for data, target in data_loader:
+                data, target = data.to(device), target.to(device)
+                data = data.view(data.size(0), -1)
+                output = self.forward(data)
+
+                test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                correct += pred.eq(target.view_as(pred)).sum().item()
+
+        length = len(data_loader.dataset)
+        test_loss /= length
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, length, 100. * correct / length))
