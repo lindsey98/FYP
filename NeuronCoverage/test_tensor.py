@@ -4,11 +4,16 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 import torch.nn.functional as F
 
+import numpy as np
 from NeuronCoverage.model import MINST_3, MINST_8
 from NeuronCoverage.neuron_coverage_model import NeuronCoverageReLUModel
 
-a = torch.load("MINST-3.pth")
-print(a)
+a = torch.Tensor([[1, 2], [3, 4]])
+b = torch.Tensor([5, 6])
 
-b = torch.load("MINST-3-A.pth")
-print(b)
+torch.save((a, b), "./t.pt")
+t = torch.load("./t.pt")
+
+print(t[0])
+print(t[1])
+# print(torch.load("../data/FashionMNIST/processed/test.pt"))
