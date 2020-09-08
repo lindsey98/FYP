@@ -4,9 +4,9 @@ from torch import optim, save, load
 import torch.nn.functional as F
 import torch
 
-from TBNN.dataset import minst_data_loader_test, minst_data_loader_train
-from TBNN.model import PaperModel, MINST_3
-from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
+from NeuronCoverage.dataset import minst_data_loader_test, minst_data_loader_train
+from NeuronCoverage.model import PaperModel, MINST_3
+from NeuronCoverage.neuron_coverage_model import NeuronCoverageReLUModel
 
 num_epochs = 15
 batch_size = 100

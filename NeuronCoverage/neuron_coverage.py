@@ -5,10 +5,10 @@ import torch
 import numpy as np
 from torch.backends import cudnn
 
-from TBNN.dataset import minst_data_loader_train, minst_data_loader_test, fasion_minst_data_loader_train, \
+from NeuronCoverage.dataset import minst_data_loader_train, minst_data_loader_test, fasion_minst_data_loader_train, \
     fasion_minst_data_loader_test
-from TBNN.model import MINST_3, MINST_8, MINST_9
-from TBNN.neuron_coverage_model import NeuronCoverageReLUModel
+from NeuronCoverage.model import MINST_3, MINST_8, MINST_9
+from NeuronCoverage.neuron_coverage_model import NeuronCoverageReLUModel
 
 
 def setup_seed(seed):
