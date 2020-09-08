@@ -1,7 +1,4 @@
 from torch.autograd import Variable
-from torch.utils.data import DataLoader
-
-from torchvision.datasets import MNIST
 from torch import optim, save, load
 
 import torch.nn.functional as F

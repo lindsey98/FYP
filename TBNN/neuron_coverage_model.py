@@ -115,7 +115,7 @@ class NeuronCoverageReLUModel:
         if save_to is not None:
             torch.save(self.state_dict(), save_to)
 
-    def combined_train(self, num_epochs, data_loader, optimizer, load_from=None, save_to=None, log_address="./log/default.txt"):
+    def combined_train(self, num_epochs, data_loader, optimizer, alpha=0.9, load_from=None, save_to=None, log_address="./log/default.txt"):
         self.combined()
         length = len(data_loader.dataset)
         if load_from is not None:
@@ -170,10 +170,12 @@ class NeuronCoverageReLUModel:
             for name, activation_map_correct in neuron_activation_map_correct.items():
                 activation_map_wrong = neuron_activation_map_wrong[name]
 
-                contribution = (activation_map_correct.double() / total_correct) / (
-                        (activation_map_wrong + 1).double() / (length - total_correct))
+                # contribution = (activation_map_correct.double() / total_correct) / (
+                #         (activation_map_wrong + 1).double() / (length - total_correct))
+                contribution = activation_map_correct.double() / (activation_map_wrong + 1).double()
                 contribution_ratio = 1 - 1 / (contribution + 1)
-                self.non_frozen_neuron_map[name] = (contribution_ratio < 0.5).int()
+                # print(contribution_ratio)
+                self.non_frozen_neuron_map[name] = (contribution_ratio < alpha).int()
 
         f.close()
         if save_to is not None:
