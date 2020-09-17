@@ -4,26 +4,27 @@ from torch import optim, save, load
 import torch.nn.functional as F
 import torch
 
-from ResidualLoss.dataset import fasion_minst_data_loader_test, fasion_minst_data_loader_train
-from ResidualLoss.model import MINST_3
+from ResidualLoss.dataset import fasion_minst_data_loader_test, fasion_minst_data_loader_train, \
+    cifar10_data_loader_test, cifar10_data_loader_train
+from ResidualLoss.model import MINST_3, CIFAR_12
 
-num_epochs = 200
+num_epochs = 5000
 batch_size = 100
 learning_rate = 0.0001
 
-model = MINST_3().cuda()
+model = CIFAR_12().cuda()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
-train_data_loader = fasion_minst_data_loader_train(batch_size)
-test_data_loader = fasion_minst_data_loader_test(batch_size)
+train_data_loader = cifar10_data_loader_train(batch_size)
+test_data_loader = cifar10_data_loader_test(batch_size)
 
 
 def train():
-    model.load_state_dict(load('./states/Fasion-MINST-3.pth'))
-    model.train()
+    model.load_state_dict(load('./states/CIFAR-12/1999.pt'))
     length = len(train_data_loader.dataset)
     for epoch in range(num_epochs):
+        model.train()
         total_train_loss = 0
         total_correct = 0
         for data in train_data_loader:
@@ -43,11 +44,12 @@ def train():
 
         total_train_loss /= length
         print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-    save(model.state_dict(), './states/Fasion-MINST-3.pth')
+        test()
+        location = './states/CIFAR-12/' + str(2000+epoch) + '.pt'
+        save(model.state_dict(), location)
 
 
 def test():
-    model.load_state_dict(load('./states/Fasion-MINST-3.pth'))
     model.eval()
     test_loss = 0
     correct = 0
@@ -62,11 +64,10 @@ def test():
 
     test_loss /= len(test_data_loader.dataset)
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_data_loader.dataset),
         100. * correct / len(test_data_loader.dataset)))
 
 
 if __name__ == '__main__':
     train()
-    test()

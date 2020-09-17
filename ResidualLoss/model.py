@@ -221,3 +221,376 @@ class MINST_9(nn.Module):
         x = self.dense(x)
         x = F.log_softmax(x, dim=1)
         return x
+
+
+class CIFAR_1(nn.Module):
+    def __init__(self):
+        super(CIFAR_1, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 2048),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(2048, 128),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden5 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = self.hidden5(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_2(nn.Module):
+    def __init__(self):
+        super(CIFAR_2, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 2048),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(2048, 256),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(256, 32),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_3(nn.Module):
+    def __init__(self):
+        super(CIFAR_3, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 2048),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(2048, 256),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(256, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_4(nn.Module):
+    def __init__(self):
+        super(CIFAR_4, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(1024, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(256, 32),
+            nn.BatchNorm1d(32),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_5(nn.Module):
+    def __init__(self):
+        super(CIFAR_5, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 32),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(32, 32),
+            nn.ReLU(inplace=True)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_6(nn.Module):
+    def __init__(self):
+        super(CIFAR_6, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(),
+            nn.Dropout(0.2)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Dropout(0.2)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.2)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.2)
+        )
+        self.hidden5 = nn.Sequential(
+            nn.Linear(128, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = self.hidden5(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_7(nn.Module):
+    def __init__(self):
+        super(CIFAR_7, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden5 = nn.Sequential(
+            nn.Linear(128, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = self.hidden5(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_8(nn.Module):
+    def __init__(self):
+        super(CIFAR_8, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(256, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(256, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(256, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_9(nn.Module):
+    def __init__(self):
+        super(CIFAR_9, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(1024, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(256, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(64, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_10(nn.Module):
+    def __init__(self):
+        super(CIFAR_10, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 32),
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(32, 10),
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_11(nn.Module):
+    def __init__(self):
+        super(CIFAR_11, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 32, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(32, 64, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(64, 64, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense = nn.Sequential(
+            nn.Linear(64 * 4 * 4, 128),
+            nn.ReLU(),
+            nn.Linear(128, 10)
+        )
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_12(nn.Module):
+    def __init__(self):
+        super(CIFAR_12, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(8, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(8, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense = nn.Sequential(
+            nn.Linear(8 * 4 * 4, 32),
+            nn.ReLU(),
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense(x)
+        x = F.log_softmax(x, dim=1)
+        return x

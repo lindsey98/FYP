@@ -7,13 +7,14 @@ import torch.nn.functional as F
 import numpy as np
 from NeuronCoverage.model import MINST_3, MINST_8
 from NeuronCoverage.neuron_coverage_model import NeuronCoverageReLUModel
+from ResidualLoss.dataset import image_net_data_loader_train
 
-a = torch.Tensor([[1, 2], [3, 4]])
-b = torch.Tensor([5, 6])
+# train_data_loader = image_net_data_loader_train(128)
+#
+# for data in train_data_loader:
+#     img, target = data
+#     img = Variable(img.view(img.size(0), -1)).cuda()
+#     print(img.shape)
+#     break
 
-torch.save((a, b), "./t.pt")
-t = torch.load("./t.pt")
-
-print(t[0])
-print(t[1])
-# print(torch.load("../data/FashionMNIST/processed/test.pt"))
+print(np.stack([np.array([1, 2]), 1]))
