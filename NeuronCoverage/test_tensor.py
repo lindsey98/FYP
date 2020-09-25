@@ -17,4 +17,7 @@ from ResidualLoss.dataset import image_net_data_loader_train
 #     print(img.shape)
 #     break
 
-print(np.stack([np.array([1, 2]), 1]))
+a = torch.Tensor([[1, 1], [0.5, 1]])
+b = torch.Tensor([[0.1, 0.1], [1, 0.1]])
+
+print(F.binary_cross_entropy(a, b, reduction='none'))

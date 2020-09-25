@@ -476,6 +476,14 @@ class CIFAR_8(nn.Module):
         x = F.log_softmax(x, dim=1)
         return x
 
+    def features(self, x):
+        o1 = self.hidden1(x)
+        o2 = self.hidden2(o1)
+        o3 = self.hidden3(o2)
+        o4 = self.hidden4(o3)
+        o5 = F.log_softmax(o4, dim=1)
+        return o5, (o1, o2, o3, o4)
+
 
 class CIFAR_9(nn.Module):
     def __init__(self):
@@ -594,3 +602,147 @@ class CIFAR_12(nn.Module):
         x = self.dense(x)
         x = F.log_softmax(x, dim=1)
         return x
+
+
+class CIFAR_13(nn.Module):
+    def __init__(self):
+        super(CIFAR_13, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(32, 16),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(16, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_14(nn.Module):
+    def __init__(self):
+        super(CIFAR_14, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_15(nn.Module):
+    def __init__(self):
+        super(CIFAR_15, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(128, 32),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(32, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_16(nn.Module):
+    def __init__(self):
+        super(CIFAR_16, self).__init__()
+        self.hidden1 = nn.Sequential(
+            nn.Linear(1024 * 3, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden2 = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden3 = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
+        self.hidden4 = nn.Sequential(
+            nn.Linear(64, 10)
+        )
+
+    def forward(self, x):
+        x = self.hidden1(x)
+        x = self.hidden2(x)
+        x = self.hidden3(x)
+        x = self.hidden4(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+    def features(self, x):
+        o1 = self.hidden1(x)
+        o2 = self.hidden2(o1)
+        o3 = self.hidden3(o2)
+        o4 = self.hidden4(o3)
+        o5 = F.log_softmax(o4, dim=1)
+        return o5, (o1, o2, o3, o4)
