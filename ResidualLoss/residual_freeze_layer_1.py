@@ -20,17 +20,20 @@ def setup_seed(seed):
     cudnn.deterministic = True
 
 
-setup_seed(1914)
+setup_seed(19141914)
 num_epochs = 200
 batch_size = 100
 learning_rate = 0.0001
-alpha = 0.05
+alpha = 0.0005
 
-ref_model = CIFAR_16().cuda()
+
 model = CIFAR_16().cuda()
 state_dict = torch.load('./CIFAR-16-5723.pt')
-ref_model.eval()
+model.load_state_dict(state_dict)
 model.train()
+
+for param in model.hidden1.parameters():
+    param.requires_grad = False
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
@@ -38,7 +41,7 @@ train_data_loader = cifar10_data_loader_train(batch_size)
 test_data_loader = cifar10_data_loader_test(batch_size)
 
 
-def residual_train():
+def train():
     total_correct_sum = 0
     total_classification_loss = 0
     length = len(train_data_loader.dataset)
@@ -51,25 +54,9 @@ def residual_train():
             img = Variable(img.view(img.size(0), -1)).cuda()
 
             optimizer.zero_grad()
-
             output, features = model.features(img)
 
-            ref_output, ref_features = ref_model.features(img)
-            ref_pred = ref_output.argmax(dim=1)
-            ref_list = - 2 * ref_pred.eq(target.cuda()).int() + 1
-
-            loss1 = 0
-            for i in [0]:
-                zeros = torch.zeros_like(features[i])
-                dropped_ref_feature = torch.where(features[i] != 0, ref_features[i], zeros)
-                normalize_dropped_ref_feature = F.normalize(dropped_ref_feature, dim=1).detach()
-                normalize_feature = F.normalize(features[i])
-
-                temp_loss = torch.mul(normalize_feature, normalize_dropped_ref_feature).sum(dim=1)
-                loss1 += (temp_loss * ref_list).sum()
-
             loss = F.nll_loss(output, target.cuda())
-            loss += alpha * loss1
 
             loss.backward()
             optimizer.step()
@@ -81,12 +68,10 @@ def residual_train():
         total_train_loss /= length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        if epoch % 40 == 0:
-            print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-            test()
-        ref_model.load_state_dict(model.state_dict())
+        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+        test()
+        # location = './states/CIFAR-12/' + str(2000+epoch) + '.pt'
 
-    torch.save(model.state_dict(), './layer-1.pt')
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)
 
@@ -112,10 +97,4 @@ def test():
 
 
 if __name__ == '__main__':
-    # for j in [0, 1, 0.5, 0.1, 0.05, 0.02, 0.015, 0.012, 0.0115, 0.011, 0.0105, 0.01, 0.009, 0.005, 0.001]:
-    #     alpha = j
-    print(alpha)
-    ref_model.load_state_dict(state_dict)
-    model.load_state_dict(state_dict)
-    residual_train()
-    print(alpha)
+    train()

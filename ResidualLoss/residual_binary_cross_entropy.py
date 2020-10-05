@@ -24,7 +24,7 @@ setup_seed(1914)
 num_epochs = 200
 batch_size = 100
 learning_rate = 0.0001
-alpha = 0.1
+alpha = 0.0005
 
 
 ref_model = CIFAR_16().cuda()

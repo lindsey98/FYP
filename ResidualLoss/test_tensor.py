@@ -18,24 +18,4 @@ img_transform = transforms.Compose([
 
 dataset = FashionMNIST('../data', transform=img_transform, train=False, download=True)
 
-
-class TestData(Dataset):  # 继承Dataset
-    def __init__(self):
-        self.hidden_layer_dict = dict()
-
-    def __len__(self):  # 返回整个数据集的大小
-        return dataset.__len__()
-
-    def __getitem__(self, index):  # 根据索引index返回dataset[index]
-        if index % 2 == 0:
-            result = {"a": torch.Tensor([[1, 2], [3, 4]]), "b": torch.Tensor([5, 6])}
-        else:
-            result = {"a": torch.Tensor([[1, 2], [3, 4]])}
-        return dataset.data[index], dataset.targets[index], result
-
-
-dataloader = DataLoader(TestData(), batch_size=1000, shuffle=False)
-
-for idx, (data, target, test) in enumerate(dataloader):
-    print(idx)
-    print(test)
+print( F.binary_cross_entropy(torch.Tensor([0.4]), torch.Tensor([0.6]), reduction='none'))
