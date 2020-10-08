@@ -746,3 +746,49 @@ class CIFAR_16(nn.Module):
         o4 = self.hidden4(o3)
         o5 = F.log_softmax(o4, dim=1)
         return o5, (o1, o2, o3, o4)
+
+
+class CIFAR_17(nn.Module):
+    def __init__(self):
+        super(CIFAR_17, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(8, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(8, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense1 = nn.Sequential(
+            nn.Linear(8 * 4 * 4, 32),
+            nn.ReLU()
+        )
+        self.dense2 = nn.Linear(32, 10)
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+    def features(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        o1 = self.conv1(x)
+        o2 = self.conv2(o1)
+        o3 = self.conv3(o2)
+        o4 = o3.view(o3.shape[0], -1)
+        o5 = self.dense1(o4)
+        o6 = self.dense2(o5)
+        o7 = F.log_softmax(o6, dim=1)
+        return o7, (o1, o2, o3, o4, o5, o6)
