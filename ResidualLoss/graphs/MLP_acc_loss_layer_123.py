@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ResidualLoss.data import alpha_value_1, y_loss_1_1, y_acc_1_1, y_acc_1_2, y_acc_123_1, y_acc_123_2, y_loss_123_1, \
-    y_loss_123_2, alpha_value_2
+from ResidualLoss.MLP_data import *
 
 fig, ax1 = plt.subplots()
 

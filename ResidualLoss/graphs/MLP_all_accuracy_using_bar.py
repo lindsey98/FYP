@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ResidualLoss.data import *
+from ResidualLoss.MLP_data import *
 
 plt.title("All Accuracy Max Bar Graph")
 

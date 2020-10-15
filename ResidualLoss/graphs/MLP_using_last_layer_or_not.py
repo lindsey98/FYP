@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ResidualLoss.data import alpha_value_1, y_loss_1_1, y_acc_1234_1, y_acc_1234_2, y_acc_123_1, y_acc_123_2
+from ResidualLoss.MLP_data import *
 
 ln1, = plt.plot(alpha_value_1, y_acc_1234_1, color='red')
 ln2, = plt.plot(alpha_value_1, y_acc_1234_2, color='red', linestyle='-.')
