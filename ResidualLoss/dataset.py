@@ -34,14 +34,14 @@ cifar10_transform = transforms.Compose([
 ])
 
 
-def cifar10_data_loader_test(batch_size):
+def cifar10_data_loader_test(batch_size, shuffle=True):
     test_dataset = CIFAR10('../data', transform=cifar10_transform, train=False)
-    return DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle)
 
 
-def cifar10_data_loader_train(batch_size):
+def cifar10_data_loader_train(batch_size, shuffle=True):
     train_dataset = CIFAR10('../data', transform=cifar10_transform)
-    return DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
 
 
 image_net_normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
