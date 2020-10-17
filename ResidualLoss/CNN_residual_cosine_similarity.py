@@ -59,7 +59,7 @@ def residual_train():
             ref_list = - 2 * ref_pred.eq(target.cuda()).int() + 1
 
             loss1 = 0
-            for i in [1]:
+            for i in [1, 2]:
                 resize_feature = features[i].view(features[i].size(0), features[i].size(1), -1).mean(axis=2)
                 resize_ref_feature = ref_features[i].view(ref_features[i].size(0), ref_features[i].size(1), -1).mean(axis=2)
 

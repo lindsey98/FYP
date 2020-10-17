@@ -1,13 +1,10 @@
 import random
-from torch.autograd import Variable
-from torch import optim
 
 import numpy as np
 from torch.backends import cudnn
-import torch.nn.functional as F
 import torch
 
-from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_train
+from ResidualLoss.dataset import cifar10_data_loader_train
 from ResidualLoss.model import CIFAR_16
 
 

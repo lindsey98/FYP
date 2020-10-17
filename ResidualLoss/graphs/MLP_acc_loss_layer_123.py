@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ResidualLoss.MLP_data import *
+from ResidualLoss.graphs.MLP_data import *
 
 fig, ax1 = plt.subplots()
 
