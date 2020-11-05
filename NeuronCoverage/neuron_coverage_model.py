@@ -174,7 +174,7 @@ class NeuronCoverageReLUModel:
                 #         (activation_map_wrong + 1).double() / (length - total_correct))
                 contribution = activation_map_correct.double() / (activation_map_wrong + 1).double()
                 contribution_ratio = 1 - 1 / (contribution + 1)
-                # print(contribution_ratio)
+                print(contribution_ratio)
                 self.non_frozen_neuron_map[name] = (contribution_ratio < alpha).int()
 
         f.close()

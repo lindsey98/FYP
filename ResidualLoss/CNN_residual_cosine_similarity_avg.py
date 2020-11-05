@@ -59,10 +59,15 @@ def residual_train():
             ref_list = - 2 * ref_pred.eq(target.cuda()).int() + 1
 
             loss1 = 0
-            for i in [0, 1, 2]:
-                resize_feature = features[i].view(features[i].size(0), features[i].size(1), -1).mean(axis=2)
-                resize_ref_feature = ref_features[i].view(ref_features[i].size(0), ref_features[i].size(1), -1).mean(axis=2)
-
+            for i in [2]:
+                if i == 0:
+                    feature = F.avg_pool2d(features[i], kernel_size=4, padding=0, stride=4)
+                    ref_feature = F.avg_pool2d(ref_features[i], kernel_size=4, padding=0, stride=4)
+                else:
+                    feature = features[i].view(features[i].size(0), -1)
+                    ref_feature = ref_features[i].view(ref_features[i].size(0), -1)
+                resize_feature = feature.view(feature.size(0), -1)
+                resize_ref_feature = ref_feature.view(ref_feature.size(0), -1)
                 normalize_ref_feature = F.normalize(resize_ref_feature, dim=1).detach()
                 normalize_feature = F.normalize(resize_feature, dim=1)
 
@@ -110,16 +115,16 @@ def test():
         test_loss, correct, len(test_data_loader.dataset),
         100. * correct / len(test_data_loader.dataset)))
 
-# 1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5,
+# 0.02, 0.015, 0.012, 0.0115, 0.011, 0.0105, 0.1, 0.05, 0.01, 0.005, 0.001
 
 
 if __name__ == '__main__':
-    for j in [50]:
+    for j in [1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5, ]:
         alpha = j
         print(alpha)
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        # loc = "./CNN-123-" + str(j) + ".pt"
+        loc = "./CNN-23-" + str(j) + ".pt"
         # torch.save(model.state_dict(), loc)
         print(alpha)

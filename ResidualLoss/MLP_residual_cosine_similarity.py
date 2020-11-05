@@ -59,7 +59,7 @@ def residual_train():
             ref_list = - 2 * ref_pred.eq(target.cuda()).int() + 1
 
             loss1 = 0
-            for i in [0]:
+            for i in [0, 1]:
                 zeros = torch.zeros_like(features[i])
                 dropped_ref_feature = torch.where(features[i] != 0, ref_features[i], zeros)
                 normalize_dropped_ref_feature = F.normalize(dropped_ref_feature, dim=1).detach()
@@ -84,9 +84,8 @@ def residual_train():
         if epoch % 40 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             test()
-        ref_model.load_state_dict(model.state_dict())
+        # ref_model.load_state_dict(model.state_dict())
 
-    torch.save(model.state_dict(), './layer-1.pt')
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)
 
@@ -114,8 +113,12 @@ def test():
 if __name__ == '__main__':
     # for j in [0, 1, 0.5, 0.1, 0.05, 0.02, 0.015, 0.012, 0.0115, 0.011, 0.0105, 0.01, 0.009, 0.005, 0.001]:
     #     alpha = j
-    print(alpha)
-    ref_model.load_state_dict(state_dict)
-    model.load_state_dict(state_dict)
-    residual_train()
-    print(alpha)
+    for j in [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001]:
+        alpha = j
+        print(alpha)
+        ref_model.load_state_dict(state_dict)
+        model.load_state_dict(state_dict)
+        residual_train()
+        # loc = "./layer12-" + str(j) + ".pt"
+        # torch.save(model.state_dict(), loc)
+        print(alpha)

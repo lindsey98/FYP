@@ -1,21 +1,39 @@
-import torch
-from torch.autograd import Variable
-from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST, FashionMNIST
-import torch.nn.functional as F
+import random
 
 import numpy as np
-from NeuronCoverage.model import MINST_3, MINST_8
-from NeuronCoverage.neuron_coverage_model import NeuronCoverageReLUModel
-from torch.utils.data import DataLoader, Dataset
-import os
-from torchvision import transforms
+from torch.backends import cudnn
+import torch
 
-img_transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.1307,), (0.3081,))
-])
+from ResidualLoss.dataset import cifar10_data_loader_train
+from ResidualLoss.model import CIFAR_17
 
-dataset = FashionMNIST('../data', transform=img_transform, train=False, download=True)
 
-print( F.binary_cross_entropy(torch.Tensor([0.4]), torch.Tensor([0.6]), reduction='none'))
+def setup_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    cudnn.deterministic = True
+
+
+setup_seed(1914)
+batch_size = 100
+
+model_before = CIFAR_17().cuda()
+state_dict = torch.load('./CIFAR-17-1.pt')
+model_before.load_state_dict(state_dict)
+model_before.eval()
+correct_before_sum = 0
+
+train_data_loader = cifar10_data_loader_train(batch_size)
+for data, target in train_data_loader:
+    data, target = data.view(data.size(0), -1).cuda(), target.cuda()
+
+    output_before, features = model_before.features(data)
+
+    for i in features:
+        print(i.shape)
+
+    break
+
