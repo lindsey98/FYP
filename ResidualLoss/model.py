@@ -792,3 +792,17 @@ class CIFAR_17(nn.Module):
         o6 = self.dense2(o5)
         o7 = F.log_softmax(o6, dim=1)
         return o7, (o1, o2, o3, o4, o5, o6)
+
+    def cnn_encoding(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        o1 = self.conv1(x)
+        o2 = self.conv2(o1)
+        o3 = self.conv3(o2)
+        return o3, (o1, o2)
+
+    def dense(self, x):
+        x = x.view(x.shape[0], -1)
+        o5 = self.dense1(x)
+        o6 = self.dense2(o5)
+        o7 = F.log_softmax(o6, dim=1)
+        return o7, (o5, o6)

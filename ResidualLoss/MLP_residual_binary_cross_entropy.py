@@ -80,8 +80,9 @@ def residual_train():
         total_train_loss /= length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-        test()
+        if epoch % 40 == 0:
+            print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+            test()
         # ref_model.load_state_dict(model.state_dict())
 
     print("average correct:", total_correct_sum / num_epochs)
@@ -109,7 +110,7 @@ def test():
 
 
 if __name__ == '__main__':
-    for j in [0.5, 0.1, 0.05, 0.01, 0.005, 0.001]:
+    for j in [0.1, 0.05, 0.01, 0.005, 0.001]:
         alpha = j
         print(alpha)
         ref_model.load_state_dict(state_dict)
