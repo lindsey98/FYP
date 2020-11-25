@@ -42,6 +42,7 @@ optimizer_dense = optim.Adam([
     {'params': model.dense1.parameters()},
     {'params': model.dense2.parameters()},
 ], lr=learning_rate, weight_decay=1e-5)
+
 optimizer_whole = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
 train_data_loader = cifar10_data_loader_train(batch_size)
@@ -103,6 +104,7 @@ def residual_train():
 
         total_train_loss_2 = 0
         total_correct_2 = 0
+
         for data in train_data_loader:
             img, target = data
             img = Variable(img.view(img.size(0), -1)).cuda()

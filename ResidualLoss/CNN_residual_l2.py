@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torch
 
 from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_train
-from ResidualLoss.model import CIFAR_16
+from ResidualLoss.model import CIFAR_17
 
 
 def setup_seed(seed):
@@ -26,9 +26,9 @@ batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
 
-ref_model = CIFAR_16().cuda()
-model = CIFAR_16().cuda()
-state_dict = torch.load('./CIFAR-16-5723.pt')
+ref_model = CIFAR_17().cuda()
+model = CIFAR_17().cuda()
+state_dict = torch.load('./CIFAR-17-1.pt')
 ref_model.eval()
 model.train()
 
@@ -51,6 +51,7 @@ def residual_train():
             img = Variable(img.view(img.size(0), -1)).cuda()
 
             optimizer.zero_grad()
+
             output, features = model.features(img)
 
             ref_output, ref_features = ref_model.features(img)
@@ -58,13 +59,14 @@ def residual_train():
             ref_list = 2 * ref_pred.eq(target.cuda()).int() - 1
 
             loss1 = 0
-            for i in [0]:
-                zeros = torch.zeros_like(features[i])
-                dropped_ref_feature = torch.where(features[i] != 0, ref_features[i], zeros)
-                normalize_dropped_ref_feature = F.normalize(dropped_ref_feature, dim=1).detach()
-                normalize_feature = F.normalize(features[i])
+            for i in [2]:
+                resize_feature = features[i].view(features[i].size(0), features[i].size(1), -1).mean(axis=2)
+                resize_ref_feature = ref_features[i].view(ref_features[i].size(0), ref_features[i].size(1), -1).mean(axis=2)
 
-                temp_loss = torch.norm(normalize_dropped_ref_feature - normalize_feature, p=2, dim=1)
+                normalize_ref_feature = F.normalize(resize_ref_feature, dim=1).detach()
+                normalize_feature = F.normalize(resize_feature, dim=1)
+
+                temp_loss = torch.norm(normalize_ref_feature - normalize_feature, p=2, dim=1)
                 loss1 += (temp_loss * ref_list).sum()
 
             loss = F.nll_loss(output, target.cuda())
@@ -80,10 +82,10 @@ def residual_train():
         total_train_loss /= length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        if epoch % 100 == 0:
+        if epoch % 50 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             test()
-        # ref_model.load_state_dict(model.state_dict())
+        ref_model.load_state_dict(model.state_dict())
 
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)
@@ -108,14 +110,16 @@ def test():
         test_loss, correct, len(test_data_loader.dataset),
         100. * correct / len(test_data_loader.dataset)))
 
+# 1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5,
+
 
 if __name__ == '__main__':
-    for j in [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]:
+    for j in [1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]:
         alpha = j
         print(alpha)
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./l2/layer1-" + str(j) + ".pt"
+        loc = "./CNN-l2/layer3-" + str(j) + ".pt"
         torch.save(model.state_dict(), loc)
         print(alpha)
