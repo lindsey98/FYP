@@ -787,6 +787,7 @@ class CIFAR_17(nn.Module):
         o1 = self.conv1(x)
         o2 = self.conv2(o1)
         o3 = self.conv3(o2)
+        o3.retain_grad()
         o4 = o3.view(o3.shape[0], -1)
         o5 = self.dense1(o4)
         o6 = self.dense2(o5)

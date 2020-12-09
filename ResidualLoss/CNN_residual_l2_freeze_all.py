@@ -63,7 +63,7 @@ def residual_train():
             ref_list = 2 * ref_pred.eq(target.cuda()).int() - 1
 
             loss1 = 0
-            for i in [2]:
+            for i in [3]:
                 resize_feature = features[i].view(features[i].size(0), features[i].size(1), -1).mean(axis=2)
                 resize_ref_feature = ref_features[i].view(ref_features[i].size(0), ref_features[i].size(1), -1).mean(axis=2)
 
@@ -124,6 +124,6 @@ if __name__ == '__main__':
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./CNN-l2/layer3-" + str(j) + ".pt"
+        loc = "./CNN-l2/layer4-" + str(j) + ".pt"
         torch.save(model.state_dict(), loc)
         print(alpha)
