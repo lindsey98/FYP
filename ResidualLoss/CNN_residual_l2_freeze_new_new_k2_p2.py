@@ -165,6 +165,6 @@ if __name__ == '__main__':
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./CNN-l2-freeze-new/kk2-" + str(j) + ".pt"
+        loc = "./CNN-l2-freeze-new/kk2-l2-" + str(j) + ".pt"
         torch.save(model.state_dict(), loc)
         print(alpha)
