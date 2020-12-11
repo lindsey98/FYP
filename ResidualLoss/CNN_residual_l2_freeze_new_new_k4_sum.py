@@ -109,9 +109,9 @@ def residual_train():
                     for k in range(top_k - 1):
                         temp_yita += lst_for_correct[k + 1][i]
                         count += 1
-                        
+
                     yita = lst_for_correct[0][i] - temp_yita / count
-                    temp_loss = torch.norm(feature_diff[i] * yita, p=2)
+                    temp_loss = torch.sum(feature_diff[i] * yita)
                     new_loss += temp_loss
                 else:
                     temp_yita = 0
@@ -124,7 +124,7 @@ def residual_train():
                             count += 1
 
                     yita = value_for_wrong[i] - temp_yita / count
-                    temp_loss = torch.norm(feature_diff[i] * yita, p=2)
+                    temp_loss = torch.sum(feature_diff[i] * yita)
                     new_loss -= temp_loss
 
             loss = F.nll_loss(output, target, reduction='mean')
@@ -178,6 +178,6 @@ if __name__ == '__main__':
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./CNN-l2-freeze-new/kk4-l2-" + str(j) + ".pt"
+        loc = "./CNN-l2-freeze-new/kk4-sum-" + str(j) + ".pt"
         torch.save(model.state_dict(), loc)
         print(alpha)

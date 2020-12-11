@@ -112,7 +112,7 @@ def residual_train():
 
                     yita = lst_for_correct[0][i] - temp_yita / count
                     temp_loss = torch.norm(feature_diff[i] * yita, p=1)
-                    new_loss -= temp_loss
+                    new_loss += temp_loss
                 else:
                     temp_yita = 0
                     count = 0

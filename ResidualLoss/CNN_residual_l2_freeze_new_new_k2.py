@@ -108,7 +108,7 @@ def residual_train():
                 if ref_correct_list[i].item():
                     yita = lst_for_correct[0][i] - lst_for_correct[1][i]
                     temp_loss = torch.norm(feature_diff[i] * yita, p=1)
-                    new_loss -= temp_loss
+                    new_loss += temp_loss
                 else:
                     yita = -lst_for_correct[0][i] + value_for_wrong[i]
                     temp_loss = torch.norm(feature_diff[i] * yita, p=1)
@@ -126,7 +126,7 @@ def residual_train():
         total_train_loss /= length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        if epoch % 50 == 0:
+        if epoch % 5 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             test()
         ref_model.load_state_dict(model.state_dict())

@@ -25,7 +25,7 @@ num_epochs = 200
 batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
-top_k = 4
+top_k = 2
 
 ref_model = CIFAR_17().cuda()
 model = CIFAR_17().cuda()
@@ -83,6 +83,8 @@ def residual_train():
                         .view(features[2].size(0), features[2].size(1), -1)
                         .mean(axis=2)  # sum the gradient to simulate the gradient for GAP
                 )
+            # take mean of top k
+            value_for_correct = torch.stack(lst_for_correct, dim=2).mean(dim=2)
 
             # clear the gradient in the previous process
             ref_model.zero_grad()
@@ -104,27 +106,12 @@ def residual_train():
 
             for i in range(batch_size):
                 if ref_correct_list[i].item():
-                    temp_yita = 0
-                    count = 0
-                    for k in range(top_k - 1):
-                        temp_yita += lst_for_correct[k + 1][i]
-                        count += 1
-                        
-                    yita = lst_for_correct[0][i] - temp_yita / count
-                    temp_loss = torch.norm(feature_diff[i] * yita, p=2)
+                    yita = lst_for_correct[0][i] - lst_for_correct[1][i]
+                    temp_loss = torch.sum(feature_diff[i] * yita)
                     new_loss += temp_loss
                 else:
-                    temp_yita = 0
-                    count = 0
-                    for k in range(top_k):
-                        if top_k_softmax[1][i][k].item() == target[i].item() or count == top_k - 1:
-                            continue
-                        else:
-                            temp_yita += lst_for_correct[k][i]
-                            count += 1
-
-                    yita = value_for_wrong[i] - temp_yita / count
-                    temp_loss = torch.norm(feature_diff[i] * yita, p=2)
+                    yita = -lst_for_correct[0][i] + value_for_wrong[i]
+                    temp_loss = torch.sum(feature_diff[i] * yita)
                     new_loss -= temp_loss
 
             loss = F.nll_loss(output, target, reduction='mean')
@@ -139,7 +126,7 @@ def residual_train():
         total_train_loss /= length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        if epoch % 50 == 0:
+        if epoch % 5 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             test()
         ref_model.load_state_dict(model.state_dict())
@@ -178,6 +165,6 @@ if __name__ == '__main__':
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./CNN-l2-freeze-new/kk4-l2-" + str(j) + ".pt"
+        loc = "./CNN-l2-freeze-new/kk2-sum-" + str(j) + ".pt"
         torch.save(model.state_dict(), loc)
         print(alpha)
