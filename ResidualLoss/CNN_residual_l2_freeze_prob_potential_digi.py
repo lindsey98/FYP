@@ -27,7 +27,7 @@ batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
 
-evaluation_batch_size = 10000
+evaluation_batch_size = 1000
 priority = 2
 
 ref_model = CIFAR_17().cuda()
@@ -160,8 +160,8 @@ def test():
 
 
 if __name__ == '__main__':
-    for j in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 30, 40, 50, 60]:
-        priority = j
+    for j in range(1, 20):
+        priority = 1 + j / 10
         print(alpha, priority)
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
