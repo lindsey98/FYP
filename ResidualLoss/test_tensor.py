@@ -1,4 +1,6 @@
 import random
+import string
+import sys
 
 import numpy as np
 from torch.backends import cudnn
@@ -20,20 +22,25 @@ def setup_seed(seed):
 setup_seed(1914)
 batch_size = 100
 
-model_before = CIFAR_17().cuda()
-state_dict = torch.load('./CIFAR-17-1.pt')
-model_before.load_state_dict(state_dict)
-model_before.eval()
-correct_before_sum = 0
+# model_before = CIFAR_17().cuda()
+# state_dict = torch.load('./CIFAR-17-1.pt')
+# model_before.load_state_dict(state_dict)
+# model_before.eval()
+# correct_before_sum = 0
+#
+# train_data_loader = cifar10_data_loader_train(batch_size)
+# for data, target in train_data_loader:
+#     data, target = data.view(data.size(0), -1).cuda(), target.cuda()
+#
+#     output_before, features = model_before.features(data)
+#
+#     for i in features:
+#         print(i.shape)
+#
+#     break
+# alpha = 0.01
+# priority = 0.06
+# print("./CNN-l2-freeze-upperbound/alpha-%s-p-%s.pt" % (alpha, priority))
 
-train_data_loader = cifar10_data_loader_train(batch_size)
-for data, target in train_data_loader:
-    data, target = data.view(data.size(0), -1).cuda(), target.cuda()
 
-    output_before, features = model_before.features(data)
-
-    for i in features:
-        print(i.shape)
-
-    break
-
+print('asfasfsaf')
