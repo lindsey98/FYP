@@ -1,11 +1,4 @@
 tensor(12378., dtype=torch.float64)
-epoch [1/200], loss:2.0135 Accuracy: 37622/50000
-Test set: Average loss: 0.9700, Accuracy: 6725/10000 (67%)
-
-epoch [2/200], loss:1.9600 Accuracy: 37059/50000
-epoch [3/200], loss:1.9313 Accuracy: 36671/50000
-epoch [4/200], loss:1.9053 Accuracy: 36456/50000
-tensor(12378., dtype=torch.float64)
 epoch [1/200], loss:1.9465 Accuracy: 37622/50000
 Test set: Average loss: 1.0238, Accuracy: 6475/10000 (65%)
 

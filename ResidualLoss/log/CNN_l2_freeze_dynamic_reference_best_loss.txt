@@ -1,0 +1,170 @@
+10
+epoch [1/200], loss:0.7149 Accuracy: 37643/50000
+Test set: Average loss: 0.9713, Accuracy: 6776/10000 (68%)
+
+epoch [51/200], loss:0.7122 Accuracy: 37635/50000
+Test set: Average loss: 0.9656, Accuracy: 6787/10000 (68%)
+
+epoch [101/200], loss:0.7122 Accuracy: 37640/50000
+Test set: Average loss: 0.9652, Accuracy: 6786/10000 (68%)
+
+epoch [151/200], loss:0.7122 Accuracy: 37649/50000
+Test set: Average loss: 0.9651, Accuracy: 6784/10000 (68%)
+
+average correct: 37643.72
+average loss: 0.7122771102375028
+tensor(49998)
+10
+5
+epoch [1/200], loss:0.7145 Accuracy: 37616/50000
+Test set: Average loss: 0.9696, Accuracy: 6777/10000 (68%)
+
+epoch [51/200], loss:0.7115 Accuracy: 37631/50000
+Test set: Average loss: 0.9642, Accuracy: 6793/10000 (68%)
+
+epoch [101/200], loss:0.7114 Accuracy: 37633/50000
+Test set: Average loss: 0.9641, Accuracy: 6793/10000 (68%)
+
+epoch [151/200], loss:0.7114 Accuracy: 37634/50000
+Test set: Average loss: 0.9640, Accuracy: 6791/10000 (68%)
+
+average correct: 37633.945
+average loss: 0.71155882820549
+tensor(49998)
+5
+1
+epoch [1/200], loss:0.7133 Accuracy: 37608/50000
+Test set: Average loss: 0.9669, Accuracy: 6778/10000 (68%)
+
+epoch [51/200], loss:0.7121 Accuracy: 37642/50000
+Test set: Average loss: 0.9630, Accuracy: 6793/10000 (68%)
+
+epoch [101/200], loss:0.7120 Accuracy: 37635/50000
+Test set: Average loss: 0.9630, Accuracy: 6793/10000 (68%)
+
+epoch [151/200], loss:0.7119 Accuracy: 37627/50000
+Test set: Average loss: 0.9629, Accuracy: 6799/10000 (68%)
+
+average correct: 37632.895
+average loss: 0.7120331144317623
+tensor(49998)
+1
+0.5
+epoch [1/200], loss:0.7133 Accuracy: 37613/50000
+Test set: Average loss: 0.9653, Accuracy: 6780/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37661/50000
+Test set: Average loss: 0.9631, Accuracy: 6792/10000 (68%)
+
+epoch [101/200], loss:0.7119 Accuracy: 37648/50000
+Test set: Average loss: 0.9631, Accuracy: 6794/10000 (68%)
+
+epoch [151/200], loss:0.7118 Accuracy: 37660/50000
+Test set: Average loss: 0.9631, Accuracy: 6797/10000 (68%)
+
+average correct: 37652.205
+average loss: 0.711962415790558
+tensor(49998)
+0.5
+0.1
+epoch [1/200], loss:0.7133 Accuracy: 37567/50000
+Test set: Average loss: 0.9647, Accuracy: 6785/10000 (68%)
+
+epoch [51/200], loss:0.7119 Accuracy: 37632/50000
+Test set: Average loss: 0.9632, Accuracy: 6795/10000 (68%)
+
+epoch [101/200], loss:0.7118 Accuracy: 37626/50000
+Test set: Average loss: 0.9634, Accuracy: 6796/10000 (68%)
+
+epoch [151/200], loss:0.7117 Accuracy: 37631/50000
+Test set: Average loss: 0.9637, Accuracy: 6791/10000 (68%)
+
+average correct: 37631.155
+average loss: 0.711883395590973
+tensor(49998)
+0.1
+0.05
+epoch [1/200], loss:0.7133 Accuracy: 37590/50000
+Test set: Average loss: 0.9647, Accuracy: 6792/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37623/50000
+Test set: Average loss: 0.9633, Accuracy: 6802/10000 (68%)
+
+epoch [101/200], loss:0.7118 Accuracy: 37618/50000
+Test set: Average loss: 0.9635, Accuracy: 6795/10000 (68%)
+
+epoch [151/200], loss:0.7117 Accuracy: 37635/50000
+Test set: Average loss: 0.9637, Accuracy: 6789/10000 (68%)
+
+average correct: 37625.33
+average loss: 0.7118954653724672
+tensor(49998)
+0.05
+0.01
+epoch [1/200], loss:0.7134 Accuracy: 37574/50000
+Test set: Average loss: 0.9646, Accuracy: 6795/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37635/50000
+Test set: Average loss: 0.9633, Accuracy: 6791/10000 (68%)
+
+epoch [101/200], loss:0.7119 Accuracy: 37634/50000
+Test set: Average loss: 0.9636, Accuracy: 6791/10000 (68%)
+
+epoch [151/200], loss:0.7118 Accuracy: 37631/50000
+Test set: Average loss: 0.9638, Accuracy: 6790/10000 (68%)
+
+average correct: 37629.905
+average loss: 0.7119179785186763
+tensor(49998)
+0.01
+0.005
+epoch [1/200], loss:0.7134 Accuracy: 37577/50000
+Test set: Average loss: 0.9646, Accuracy: 6798/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37626/50000
+Test set: Average loss: 0.9632, Accuracy: 6792/10000 (68%)
+
+epoch [101/200], loss:0.7118 Accuracy: 37626/50000
+Test set: Average loss: 0.9635, Accuracy: 6791/10000 (68%)
+
+epoch [151/200], loss:0.7118 Accuracy: 37615/50000
+Test set: Average loss: 0.9638, Accuracy: 6785/10000 (68%)
+
+average correct: 37624.695
+average loss: 0.711926185264206
+tensor(49998)
+0.005
+0.001
+epoch [1/200], loss:0.7134 Accuracy: 37570/50000
+Test set: Average loss: 0.9646, Accuracy: 6795/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37629/50000
+Test set: Average loss: 0.9633, Accuracy: 6788/10000 (68%)
+
+epoch [101/200], loss:0.7118 Accuracy: 37625/50000
+Test set: Average loss: 0.9636, Accuracy: 6798/10000 (68%)
+
+epoch [151/200], loss:0.7118 Accuracy: 37624/50000
+Test set: Average loss: 0.9637, Accuracy: 6787/10000 (68%)
+
+average correct: 37622.745
+average loss: 0.7119288681690216
+tensor(49998)
+0.001
+0.0005
+epoch [1/200], loss:0.7134 Accuracy: 37575/50000
+Test set: Average loss: 0.9645, Accuracy: 6799/10000 (68%)
+
+epoch [51/200], loss:0.7120 Accuracy: 37623/50000
+Test set: Average loss: 0.9632, Accuracy: 6789/10000 (68%)
+
+epoch [101/200], loss:0.7119 Accuracy: 37618/50000
+Test set: Average loss: 0.9635, Accuracy: 6789/10000 (68%)
+
+epoch [151/200], loss:0.7118 Accuracy: 37634/50000
+Test set: Average loss: 0.9637, Accuracy: 6793/10000 (68%)
+
+average correct: 37626.05
+average loss: 0.7119268541080472
+tensor(49998)
+0.0005

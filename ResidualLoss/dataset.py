@@ -1,4 +1,5 @@
-from torch.utils.data import DataLoader
+import torch
+from torch.utils.data import DataLoader, Dataset
 from torchvision.datasets import MNIST, CIFAR10, FashionMNIST, ImageNet
 from torchvision import transforms
 
@@ -52,26 +53,21 @@ def cifar10_data_loader_train(batch_size, shuffle=True):
     return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
 
 
-image_net_normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+class L2Dataset(Dataset):
+    def __init__(self, dataset, feature_shape=(8,)):
+        self.dataset = dataset
+        self.length = len(dataset)
+        self.feature_shape = feature_shape
 
+        self.l2_loss = torch.tensor([float('inf')] * self.length)
+        self.l2_ref = torch.zeros((self.length, ) + feature_shape)
 
-def image_net_data_loader_test(batch_size):
-    pre_processing = transforms.Compose([
-        transforms.Scale(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        image_net_normalize,
-    ])
-    test_dataset = ImageNet('../data', transform=pre_processing, train=False, download=True)
-    return DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    def __getitem__(self, index):
+        return self.dataset.__getitem__(index) + (self.l2_ref[index], index)
 
+    def __len__(self):
+        return self.length
 
-def image_net_data_loader_train(batch_size):
-    pre_processing = transforms.Compose([
-        transforms.RandomSizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        image_net_normalize,
-    ])
-    train_dataset = ImageNet('../data', transform=pre_processing, download=True)
-    return DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    def reset(self):
+        self.l2_loss = torch.tensor([float('inf')] * self.length)
+        self.l2_ref = torch.zeros((self.length,) + self.feature_shape)

@@ -26,7 +26,7 @@ class Logger(object):
         self.log.flush()
 
     def flush(self):
-        pass
+        self.log.flush()
 
 
 sys.stdout = Logger()
@@ -47,7 +47,7 @@ batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
 
-evaluation_batch_size = 1000
+evaluation_batch_size = 5000
 priority = 2
 
 ref_model = CIFAR_17().cuda()

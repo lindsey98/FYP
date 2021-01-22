@@ -5,8 +5,9 @@ import sys
 import numpy as np
 from torch.backends import cudnn
 import torch
+from torch.utils.data import Dataset, DataLoader
 
-from ResidualLoss.dataset import cifar10_data_loader_train
+from ResidualLoss.dataset import cifar10_data_loader_train, cifar10_dataset_train, L2Dataset
 from ResidualLoss.model import CIFAR_17
 
 
@@ -42,5 +43,13 @@ batch_size = 100
 # priority = 0.06
 # print("./CNN-l2-freeze-upperbound/alpha-%s-p-%s.pt" % (alpha, priority))
 
+new_dataset = L2Dataset(cifar10_dataset_train())
 
-print('asfasfsaf')
+new_dataloader = DataLoader(new_dataset, batch_size=2, shuffle=False)
+
+for idx, data in enumerate(new_dataloader):
+    print(data)
+    new_dataset.l2_ref[3] = torch.ones(8)
+    print(1 < new_dataset.l2_loss[0])
+    if idx > 1:
+        break
