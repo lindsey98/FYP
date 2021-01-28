@@ -35,21 +35,21 @@ cifar10_transform = transforms.Compose([
 ])
 
 
-def cifar10_dataset_test():
-    return CIFAR10('../data', transform=cifar10_transform, train=False)
+def cifar10_dataset_test(loc='../data'):
+    return CIFAR10(loc, transform=cifar10_transform, train=False)
 
 
-def cifar10_dataset_train():
-    return CIFAR10('../data', transform=cifar10_transform, train=True)
+def cifar10_dataset_train(loc='../data'):
+    return CIFAR10(loc, transform=cifar10_transform, train=True)
 
 
-def cifar10_data_loader_test(batch_size, shuffle=True):
-    test_dataset = CIFAR10('../data', transform=cifar10_transform, train=False)
+def cifar10_data_loader_test(batch_size, shuffle=True, loc='../data'):
+    test_dataset = CIFAR10(loc, transform=cifar10_transform, train=False)
     return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle)
 
 
-def cifar10_data_loader_train(batch_size, shuffle=True):
-    train_dataset = CIFAR10('../data', transform=cifar10_transform)
+def cifar10_data_loader_train(batch_size, shuffle=True, loc='../data'):
+    train_dataset = CIFAR10(loc, transform=cifar10_transform)
     return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
 
 
