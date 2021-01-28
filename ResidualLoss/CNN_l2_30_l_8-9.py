@@ -41,7 +41,7 @@ def setup_seed(seed):
     cudnn.deterministic = True
 
 
-setup_seed(1914 * 16)
+setup_seed(1914 * 89)
 num_epochs = 1800
 batch_size = 100
 learning_rate = 0.0001
