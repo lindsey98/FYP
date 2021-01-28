@@ -1,4 +1,6 @@
 import random
+import sys
+
 from torch.autograd import Variable
 from torch import optim
 
@@ -10,6 +12,24 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 
 from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_train, cifar10_dataset_train
 from ResidualLoss.model import CIFAR_17
+
+
+class Logger(object):
+    def __init__(self):
+        self.terminal = sys.stdout
+        log_loc = "./log/%s.txt" % sys.argv[0].split("/")[-1].split(".")[0]
+        self.log = open(log_loc, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+        self.log.flush()
+
+    def flush(self):
+        pass
+
+
+sys.stdout = Logger()
 
 
 def setup_seed(seed):
@@ -93,7 +113,7 @@ def residual_train():
 
             ref_output, ref_features = ref_model.features(data)
             ref_pred = ref_output.argmax(dim=1)
-            ref_list = 2 * ref_pred.eq(target).int() - 1
+            ref_list = ref_pred.eq(target).int()
 
             loss1 = 0
             for i in [2]:
@@ -119,7 +139,6 @@ def residual_train():
         total_classification_loss += total_train_loss
         if epoch % 100 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
-            test()
 
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)
@@ -144,12 +163,12 @@ def test():
         test_loss, correct, len(test_data_loader.dataset),
         100. * correct / len(test_data_loader.dataset)))
 
-# 1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5,
+# 100, 50, 10,
 
 
 if __name__ == '__main__':
-    for iter_1 in [100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]:
-        for iter_2 in [1, 1.5, 2, 5, 10, 50, 100]:
+    for iter_1 in [10, 5, 1, 0.5, 0.1, 0.05, 0.01]:
+        for iter_2 in [2, 5, 10, 50]:
             alpha = iter_1
             priority = iter_2
             print(alpha, priority)
