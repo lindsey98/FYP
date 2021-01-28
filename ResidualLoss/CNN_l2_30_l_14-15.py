@@ -113,7 +113,7 @@ def test():
 if __name__ == '__main__':
     for iter in range(14, 16):
         print(iter)
-        model = CIFAR_17().cuda()
+        model.load_state_dict(CIFAR_17().cuda().state_dict())
         residual_train()
         loc = "./CNN-l2-30/iter-%s.pt" % iter
         torch.save(model.state_dict(), loc)
