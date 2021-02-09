@@ -15,5 +15,5 @@ num_list = [
 ]
 
 plt.ylim(37500, 37600)
-plt.bar(range(len(num_list)), num_list, color='rgb', tick_label=name_list)
+plt.bar(range(len(num_list)), num_list, tick_label=name_list)
 plt.show()

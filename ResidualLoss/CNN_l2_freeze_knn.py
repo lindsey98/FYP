@@ -102,7 +102,6 @@ def residual_train():
                     if not correct_list[i].item():
                         current_internal_signals = internal_signals_dict[target[i].item()]
 
-                        resize_feature[i].expand(current_internal_signals.shape)
                         dist = current_internal_signals.add(-resize_feature[i].expand(current_internal_signals.shape)).pow(2).sum(dim=1).pow(.5)
                         knn_indices = dist.topk(k, largest=False, sorted=False)
                         distance[start_index + i] = knn_indices[0].mean().item()
