@@ -839,36 +839,151 @@ class CIFAR_18(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
-        x = x.view(x.shape[0], -1)
         x = self.avg_pool(x)
+        x = x.view(x.shape[0], -1)
         x = self.dense1(x)
         x = self.dense2(x)
         x = F.log_softmax(x, dim=1)
         return x
 
-    # def features(self, x, retain_grad=True):
-    #     x = x.reshape(x.shape[0], 3, 32, 32)
-    #     o1 = self.conv1(x)
-    #     o2 = self.conv2(o1)
-    #     o3 = self.conv3(o2)
-    #     if retain_grad:
-    #         o3.retain_grad()
-    #     o4 = o3.view(o3.shape[0], -1)
-    #     o5 = self.dense1(o4)
-    #     o6 = self.dense2(o5)
-    #     o7 = F.log_softmax(o6, dim=1)
-    #     return o7, (o1, o2, o3, o4, o5, o6)
-    #
-    # def cnn_encoding(self, x):
-    #     x = x.reshape(x.shape[0], 3, 32, 32)
-    #     o1 = self.conv1(x)
-    #     o2 = self.conv2(o1)
-    #     o3 = self.conv3(o2)
-    #     return o3, (o1, o2)
-    #
-    # def dense(self, x):
-    #     x = x.view(x.shape[0], -1)
-    #     o5 = self.dense1(x)
-    #     o6 = self.dense2(o5)
-    #     o7 = F.log_softmax(o6, dim=1)
-    #     return o7, (o5, o6)
+
+class CIFAR_19(nn.Module):
+    def __init__(self):
+        super(CIFAR_19, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(8, 16, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(16, 16, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.dense1 = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.ReLU()
+        )
+        self.dense2 = nn.Linear(32, 10)
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.max_pool(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_20(nn.Module):
+    def __init__(self):
+        super(CIFAR_20, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 16, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(16, 16, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(16, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense1 = nn.Sequential(
+            nn.Linear(128, 16),
+            nn.ReLU()
+        )
+        self.dense2 = nn.Linear(16, 10)
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_21(nn.Module):
+    def __init__(self):
+        super(CIFAR_21, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 32, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(32, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(8, 8, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense1 = nn.Sequential(
+            nn.Linear(128, 16),
+            nn.ReLU()
+        )
+        self.dense2 = nn.Linear(16, 10)
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
+
+
+class CIFAR_22(nn.Module):
+    def __init__(self):
+        super(CIFAR_22, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, 48, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(48, 6, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(6, 6, 3, 1, 1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.dense1 = nn.Sequential(
+            nn.Linear(96, 16),
+            nn.ReLU()
+        )
+        self.dense2 = nn.Linear(16, 10)
+
+    def forward(self, x):
+        x = x.reshape(x.shape[0], 3, 32, 32)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.shape[0], -1)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
