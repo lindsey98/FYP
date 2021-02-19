@@ -139,7 +139,7 @@ def residual_train():
             data, target = data.cuda(), target.cuda()
             optimizer.zero_grad()
 
-            output, features = model.features(data)
+            output = model(data)
             loss = F.nll_loss(output, target)
 
             loss.backward()

@@ -1,0 +1,51 @@
+tensor(6724., dtype=torch.float64)
+tensor(6724., dtype=torch.float64)
+epoch [50/2000], loss:1.3667 Accuracy: 16955/50000
+epoch [100/2000], loss:0.9826 Accuracy: 17150/50000
+epoch [150/2000], loss:0.7038 Accuracy: 17493/50000
+epoch [200/2000], loss:0.4963 Accuracy: 17840/50000
+epoch [250/2000], loss:0.3341 Accuracy: 17961/50000
+epoch [300/2000], loss:0.2045 Accuracy: 17890/50000
+epoch [350/2000], loss:0.1081 Accuracy: 18294/50000
+epoch [400/2000], loss:0.0903 Accuracy: 18153/50000
+epoch [450/2000], loss:0.1059 Accuracy: 18351/50000
+epoch [500/2000], loss:0.0100 Accuracy: 18330/50000
+epoch [550/2000], loss:0.0467 Accuracy: 18324/50000
+epoch [600/2000], loss:0.0049 Accuracy: 18359/50000
+epoch [650/2000], loss:0.0039 Accuracy: 18429/50000
+epoch [700/2000], loss:0.0024 Accuracy: 18436/50000
+epoch [750/2000], loss:0.0032 Accuracy: 18352/50000
+epoch [800/2000], loss:0.0014 Accuracy: 18320/50000
+epoch [850/2000], loss:0.0013 Accuracy: 18354/50000
+epoch [900/2000], loss:0.1312 Accuracy: 18399/50000
+epoch [950/2000], loss:0.0007 Accuracy: 18379/50000
+epoch [1000/2000], loss:0.0005 Accuracy: 18364/50000
+epoch [1050/2000], loss:0.0011 Accuracy: 18421/50000
+epoch [1100/2000], loss:0.0006 Accuracy: 18341/50000
+epoch [1150/2000], loss:0.0004 Accuracy: 18414/50000
+epoch [1200/2000], loss:0.0004 Accuracy: 18385/50000
+epoch [1250/2000], loss:0.0004 Accuracy: 18391/50000
+epoch [1300/2000], loss:0.0694 Accuracy: 17116/50000
+epoch [1350/2000], loss:0.0002 Accuracy: 18404/50000
+epoch [1400/2000], loss:0.0003 Accuracy: 18432/50000
+epoch [1450/2000], loss:0.0003 Accuracy: 18392/50000
+epoch [1500/2000], loss:0.0002 Accuracy: 18400/50000
+epoch [1550/2000], loss:0.0002 Accuracy: 18414/50000
+epoch [1600/2000], loss:0.0003 Accuracy: 18414/50000
+epoch [1650/2000], loss:0.0002 Accuracy: 18432/50000
+epoch [1700/2000], loss:0.0002 Accuracy: 18400/50000
+epoch [1750/2000], loss:0.0018 Accuracy: 18443/50000
+epoch [1800/2000], loss:0.0002 Accuracy: 18409/50000
+epoch [1850/2000], loss:0.0003 Accuracy: 18426/50000
+epoch [1900/2000], loss:0.0001 Accuracy: 18420/50000
+epoch [1950/2000], loss:0.0002 Accuracy: 18439/50000
+epoch [2000/2000], loss:0.0001 Accuracy: 18439/50000
+tensor(50000., dtype=torch.float64)
+tensor(31579., dtype=torch.float64)
+tensor(50000., dtype=torch.float64)
+epoch [50/2000], loss:1.0542 Accuracy: 31440/50000
+epoch [100/2000], loss:0.8842 Accuracy: 34787/50000
+epoch [150/2000], loss:0.7982 Accuracy: 36213/50000
+epoch [200/2000], loss:0.7500 Accuracy: 37230/50000
+average correct: 3320.6515
+average loss: 0.09519983896423335
