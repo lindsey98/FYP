@@ -69,7 +69,7 @@ test_data_loader = cifar10_data_loader_test(batch_size)
 
 def residual_train():
     prob = torch.zeros(len(train_dataset), dtype=torch.float64).cuda()
-    A, B = torch.load("./analysis-and-draw/data/CNN-l2-30-A-B.pt")
+    A, B = torch.load("./analysis-and-draw/data/CNN-30-A-B.pt")
     for i in range(train_data_length):
         if i in A or i in B:
             prob[i] = 1
@@ -116,5 +116,5 @@ def residual_train():
 
 if __name__ == '__main__':
     residual_train()
-    loc = "./CNN-l2-30/A_and_B-reinit.pt"
+    loc = "./CNN-30/A_and_B-reinit.pt"
     torch.save(model.state_dict(), loc)

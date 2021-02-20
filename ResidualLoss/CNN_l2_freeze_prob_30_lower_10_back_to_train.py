@@ -69,7 +69,7 @@ def residual_train():
     prob = torch.ones(len(train_dataset), dtype=torch.float64).cuda()
     sampler.weights = prob
     print(prob.sum())
-    model.load_state_dict(torch.load("./CNN-l2-30/lower_10/950.pt"))
+    model.load_state_dict(torch.load("./CNN-30/lower_10/950.pt"))
     total_correct_sum = 0
     total_classification_loss = 0
 
@@ -103,7 +103,7 @@ def residual_train():
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
         print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
-        loc = "./CNN-l2-30/lower_10_back/%s.pt" % epoch
+        loc = "./CNN-30/lower_10_back/%s.pt" % epoch
         torch.save(model.state_dict(), loc)
 
     print("average correct:", total_correct_sum / num_epochs)

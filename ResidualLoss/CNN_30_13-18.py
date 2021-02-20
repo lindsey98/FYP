@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
 from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_train, cifar10_dataset_train
-from ResidualLoss.model import CIFAR_17
+from ResidualLoss.model import CIFAR_20
 
 
 class Logger(object):
@@ -41,65 +41,38 @@ def setup_seed(seed):
     cudnn.deterministic = True
 
 
-setup_seed(1914)
-num_epochs = 200
+setup_seed(1914 * 13)
+num_epochs = 2000
 batch_size = 100
-evaluation_batch_size = 2500
 learning_rate = 0.0001
 
-model = CIFAR_17().cuda()
-state_dict = torch.load('./CIFAR-17-1.pt')
+model = CIFAR_20().cuda()
 model.train()
-
-# optimizer = optim.Adam([
-#     {'params': model.conv1.parameters()},
-#     {'params': model.conv2.parameters()},
-#     {'params': model.conv3.parameters()}
-# ], lr=learning_rate, weight_decay=1e-5)
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
-train_dataset = cifar10_dataset_train()
-train_data_length = len(train_dataset)
-sampler = WeightedRandomSampler([1] * train_data_length, num_samples=train_data_length, replacement=True)
-train_data_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler)
-
-evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_size, shuffle=False)
+train_data_loader = cifar10_data_loader_train(batch_size)
+train_data_length = 50000
 test_data_loader = cifar10_data_loader_test(batch_size)
 
 
 def residual_train():
-    prob = torch.ones(len(train_dataset), dtype=torch.float64).cuda()
-    result = torch.load("./analysis-and-draw/data/CNN-30-worst-1.pt")
-    for i in range(train_data_length):
-        if i in result:
-            prob[i] = 0
-    sampler.weights = prob
-    print(prob.sum())
-
     total_correct_sum = 0
     total_classification_loss = 0
 
     for epoch in range(num_epochs):
         total_correct = 0
-        model.eval()
-
-        with torch.no_grad():
-            for data, target in evaluation_data_loader:
-                data, target = data.cuda(), target.cuda()
-                output = model(data)
-
-                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-                total_correct += pred.eq(target.view_as(pred)).sum().item()
-
         model.train()
         total_train_loss = 0
+
         for data, target in train_data_loader:
             data, target = data.cuda(), target.cuda()
             optimizer.zero_grad()
 
             output, features = model.features(data)
             loss = F.nll_loss(output, target)
+            pred = output.argmax(dim=1)
+            total_correct += pred.eq(target).sum().item()
 
             loss.backward()
             optimizer.step()
@@ -115,8 +88,33 @@ def residual_train():
     print("average loss:", total_classification_loss / num_epochs)
 
 
+def test():
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_data_loader:
+            data, target = data.cuda(), target.cuda()
+            output = model(data)
+
+            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1)  # get the index of the max log-probability
+            correct += pred.eq(target).sum().item()
+
+    test_loss /= len(test_data_loader.dataset)
+
+    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss, correct, len(test_data_loader.dataset),
+        100. * correct / len(test_data_loader.dataset)))
+
+# 1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5,
+
+
 if __name__ == '__main__':
-    model.load_state_dict(state_dict)
-    residual_train()
-    loc = "./CNN-30/discard-1.pt"
-    torch.save(model.state_dict(), loc)
+    for iter in range(13, 19):
+        print(iter)
+        model.load_state_dict(CIFAR_20().cuda().state_dict())
+        residual_train()
+        loc = "./CNN-30/CIFAR_20/iter-%s.pt" % iter
+        torch.save(model.state_dict(), loc)
+        print(iter)

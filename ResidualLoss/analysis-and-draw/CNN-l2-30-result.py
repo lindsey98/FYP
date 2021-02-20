@@ -20,7 +20,7 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 # for i in range(1, 31):
 #     correct_list = list()
 #     with torch.no_grad():
-#         state_dict = torch.load('../CNN-l2-30/iter-%s.pt' % i)
+#         state_dict = torch.load('../CNN-30/iter-%s.pt' % i)
 #         model.load_state_dict(state_dict)
 #
 #         start_index = 0
@@ -34,9 +34,9 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 #     result_list.append(torch.hstack(correct_list))
 #     print(i)
 #
-# torch.save(torch.vstack(result_list), "./data/CNN-l2-30-result.pt")
+# torch.save(torch.vstack(result_list), "./data/CNN-30-result.pt")
 
-result = torch.load("./data/CNN-l2-30-result.pt")
+result = torch.load("./data/CNN-30-result.pt")
 correct_num = result.sum(dim=1)
 occur = result.int().sum(dim=0)
 
@@ -104,7 +104,7 @@ occur = result.int().sum(dim=0)
 # plt.ylabel('num')
 # plt.show()
 #
-# torch.save(lst_2, "./data/CNN-l2-30-potential.pt")
+# torch.save(lst_2, "./data/CNN-30-potential.pt")
 # print(lst_1)
 # print(len(lst_2))
 

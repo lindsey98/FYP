@@ -67,7 +67,7 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 
 def residual_train():
     prob = torch.zeros(len(train_dataset), dtype=torch.float64).cuda()
-    result = torch.load("./analysis-and-draw/data/CNN-l2-30-potential.pt")
+    result = torch.load("./analysis-and-draw/data/CNN-30-potential.pt")
     for i in range(train_data_length):
         if i in result:
             prob[i] = 1
@@ -108,7 +108,7 @@ def residual_train():
         total_classification_loss += total_train_loss
         print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
         if epoch % 50 == 0:
-            loc = "./CNN-l2-30/lower_10/%s.pt" % epoch
+            loc = "./CNN-30/lower_10/%s.pt" % epoch
         torch.save(model.state_dict(), loc)
 
     print("average correct:", total_correct_sum / num_epochs)

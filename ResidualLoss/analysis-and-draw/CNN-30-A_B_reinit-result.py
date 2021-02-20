@@ -15,7 +15,7 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 
 correct_list = list()
 with torch.no_grad():
-    state_dict = torch.load('../CNN-l2-30/A_and_B-reinit.pt')
+    state_dict = torch.load('../CNN-30/A_and_B-reinit.pt')
     model.load_state_dict(state_dict)
 
     start_index = 0
@@ -28,12 +28,12 @@ with torch.no_grad():
         correct_list.append(correct)
 
 
-torch.save(torch.hstack(correct_list), "./data/CNN-l2-30-A_B-reinit-result.pt")
+torch.save(torch.hstack(correct_list), "./data/CNN-30-A_B-reinit-result.pt")
 
-result = torch.load("./data/CNN-l2-30-A_B-reinit-result.pt")
+result = torch.load("./data/CNN-30-A_B-reinit-result.pt")
 print(result.shape)
 
-A, B = torch.load("./data/CNN-l2-30-A-B.pt")
+A, B = torch.load("./data/CNN-30-A-B.pt")
 
 correct_A_now = list()
 correct_B_now = list()
