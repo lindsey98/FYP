@@ -8,35 +8,37 @@ from torchvision.datasets import CIFAR10
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 from ResidualLoss.dataset import cifar10_data_loader_train
-from ResidualLoss.model import CIFAR_17
+from ResidualLoss.model import CIFAR_20
 
-model = CIFAR_17().cuda()
+model = CIFAR_20().cuda()
 model.eval()
 
 evaluation_batch_size = 10000
 evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_size, shuffle=False, loc="../../data")
 
-# result_list = list()
-# for i in range(1, 31):
-#     correct_list = list()
-#     with torch.no_grad():
-#         state_dict = torch.load('../CNN-30/iter-%s.pt' % i)
-#         model.load_state_dict(state_dict)
-#
-#         start_index = 0
-#         for data, target in evaluation_data_loader:
-#             data, target = data.cuda(), target.cuda()
-#             output = model(data)
-#
-#             pred = output.argmax(dim=1)
-#             correct = pred.eq(target)
-#             correct_list.append(correct)
-#     result_list.append(torch.hstack(correct_list))
-#     print(i)
-#
-# torch.save(torch.vstack(result_list), "./data/CNN-30-result.pt")
+result_list = list()
+for i in range(1, 31):
+    if i == 7:
+        continue
+    correct_list = list()
+    with torch.no_grad():
+        state_dict = torch.load('../CNN-30/CIFAR_20/iter-%s.pt' % i)
+        model.load_state_dict(state_dict)
 
-result = torch.load("./data/CNN-30-result.pt")
+        start_index = 0
+        for data, target in evaluation_data_loader:
+            data, target = data.cuda(), target.cuda()
+            output = model(data)
+
+            pred = output.argmax(dim=1)
+            correct = pred.eq(target)
+            correct_list.append(correct)
+    result_list.append(torch.hstack(correct_list))
+    print(i)
+
+torch.save(torch.vstack(result_list), "./data/CNN-30-CIFAR_20-result.pt")
+
+result = torch.load("./data/CNN-30-CIFAR_20-result.pt")
 correct_num = result.sum(dim=1)
 occur = result.int().sum(dim=0)
 
@@ -78,20 +80,11 @@ occur = result.int().sum(dim=0)
 # model.load_state_dict(state_dict)
 #
 # lst_1 = [0] * 31
-# lst_2 = list()
-# start_index = 0
-# for data, target in evaluation_data_loader:
-#     data, target = data.cuda(), target.cuda()
-#     output = model(data)
-#
-#     pred = output.argmax(dim=1)
-#     correct = pred.eq(target)
-#     for i in range(evaluation_batch_size):
-#         if not correct[i].item():
-#             lst_1[occur[start_index + i]] += 1
-#             if occur[start_index + i] <= 10:
-#                 lst_2.append(start_index + i)
-#     start_index += evaluation_batch_size
+
+lst_2 = list()
+for i in range(50000):
+    if occur[i] <= 10:
+        lst_2.append(i)
 #
 # plt.rcParams['figure.figsize'] = (12.0, 6.0)
 # plt.rcParams['figure.dpi'] = 100
@@ -104,14 +97,15 @@ occur = result.int().sum(dim=0)
 # plt.ylabel('num')
 # plt.show()
 #
-# torch.save(lst_2, "./data/CNN-30-potential.pt")
+torch.save(lst_2, "./data/CNN-30-CIFAR_20-lower_10.pt")
+print(len(lst_2))
 # print(lst_1)
 # print(len(lst_2))
 
-lst_3 = list()
-for i in range(50000):
-    if occur[i] == 0:
-        lst_3.append(i)
-
-print(len(lst_3))
-torch.save(lst_3, "./data/CNN-l2-30-worst-1.pt")
+# lst_3 = list()
+# for i in range(50000):
+#     if occur[i] == 0:
+#         lst_3.append(i)
+#
+# print(len(lst_3))
+# torch.save(lst_3, "./data/CNN-l2-30-worst-1.pt")

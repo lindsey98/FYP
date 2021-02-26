@@ -5,9 +5,9 @@ import numpy as np
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 from ResidualLoss.dataset import cifar10_data_loader_train
-from ResidualLoss.model import CIFAR_17
+from ResidualLoss.model import CIFAR_20
 
-model = CIFAR_17().cuda()
+model = CIFAR_20().cuda()
 model.eval()
 
 evaluation_batch_size = 10000
@@ -16,7 +16,7 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 result_list = list()
 correct_list = list()
 with torch.no_grad():
-    state_dict = torch.load('../CNN-Train/CIFAR_17/false_epoch-2000.pt')
+    state_dict = torch.load('../CNN-Train/CIFAR_20/false_epoch-2000.pt')
     model.load_state_dict(state_dict)
 
     start_index = 0
@@ -32,7 +32,7 @@ result_list.append(torch.hstack(correct_list).detach())
 for i in range(1, 51):
     correct_list = list()
     with torch.no_grad():
-        state_dict = torch.load('../CNN-Train/CIFAR_17/back_epoch-%s.pt' % i)
+        state_dict = torch.load('../CNN-Train/CIFAR_20/back_epoch-%s.pt' % i)
         model.load_state_dict(state_dict)
 
         start_index = 0
@@ -46,11 +46,11 @@ for i in range(1, 51):
     result_list.append(torch.hstack(correct_list).detach())
     print(i)
 
-torch.save(torch.vstack(result_list), "./data/CNN-30-CIFAR_17-back-result.pt")
+torch.save(torch.vstack(result_list), "./data/CNN-30-CIFAR_20-back-result.pt")
 
-result = torch.load("./data/CNN-30-CIFAR_17-back-result.pt")
+result = torch.load("./data/CNN-30-CIFAR_20-back-result.pt")
 
-false_list = torch.load("./data/CNN-30-CIFAR_17-lower_10.pt")
+false_list = torch.load("./data/CNN-30-CIFAR_20-lower_10.pt")
 false_num = len(false_list)
 
 train_result_list = list()

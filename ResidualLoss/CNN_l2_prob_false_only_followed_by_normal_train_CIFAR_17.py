@@ -48,8 +48,6 @@ evaluation_batch_size = 100
 learning_rate = 0.0001
 
 model = CIFAR_17().cuda()
-state_dict = torch.load('./CNN-Train/CIFAR_17/epoch-5000.pt')
-model.eval()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
@@ -64,25 +62,15 @@ test_data_loader = cifar10_data_loader_test(batch_size)
 
 def residual_train():
     prob = torch.zeros(len(train_dataset), dtype=torch.float64)
-    start_index = 0
-    for data, target in evaluation_data_loader:
-        data, target = data.cuda(), target.cuda()
-        output = model(data)
-        pred = output.argmax(dim=1)
-        correct_list = pred.eq(target)
-
-        for i in range(correct_list.size(0)):
-            if not correct_list[i].item():
-                prob[start_index + i] = 1
-
-        start_index += evaluation_batch_size
+    lst = torch.load("./analysis-and-draw/data/CNN-30-CIFAR_17-lower_10.pt")
+    for idx in lst:
+        prob[idx] = 1
 
     sampler.weights = prob
     print(prob.sum())
 
     total_correct_sum = 0
     total_classification_loss = 0
-    model.load_state_dict(CIFAR_17().state_dict())
 
     for epoch in range(num_epochs):
         total_correct = 0
@@ -121,7 +109,7 @@ def residual_train():
     sampler.weights = prob
     print(prob.sum())
 
-    for epoch in range(int(num_epochs / 2)):
+    for epoch in range(200):
         total_correct = 0
         model.eval()
 
@@ -150,9 +138,8 @@ def residual_train():
         total_train_loss /= train_data_length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        if (epoch + 1) % 50 == 0:
-            print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
-            torch.save(model.state_dict(), "./CNN-Train/CIFAR_17/back_epoch-%s.pt" % (epoch + 1))
+        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
+        torch.save(model.state_dict(), "./CNN-Train/CIFAR_17/back_epoch-%s.pt" % (epoch + 1))
 
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)
@@ -162,5 +149,4 @@ def residual_train():
 
 
 if __name__ == '__main__':
-    model.load_state_dict(state_dict)
     residual_train()
