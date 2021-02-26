@@ -111,7 +111,7 @@ def test():
 
 
 if __name__ == '__main__':
-    for iter in range(11, 16):
+    for iter in range(13, 16):
         print(iter)
         model.load_state_dict(CIFAR_11_6().cuda().state_dict())
         residual_train()

@@ -41,7 +41,7 @@ def setup_seed(seed):
     cudnn.deterministic = True
 
 
-setup_seed(1914 * 19)
+setup_seed(1914 * 18)
 num_epochs = 2000
 batch_size = 100
 learning_rate = 0.0001
@@ -111,7 +111,7 @@ def test():
 
 
 if __name__ == '__main__':
-    for iter in range(16, 21):
+    for iter in range(18, 21):
         print(iter)
         model.load_state_dict(CIFAR_11_6().cuda().state_dict())
         residual_train()
