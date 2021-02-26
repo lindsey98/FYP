@@ -8,9 +8,9 @@ from torchvision.datasets import CIFAR10
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 from ResidualLoss.dataset import cifar10_data_loader_train
-from ResidualLoss.model import CIFAR_20
+from ResidualLoss.model import CIFAR_17
 
-model = CIFAR_20().cuda()
+model = CIFAR_17().cuda()
 model.eval()
 
 evaluation_batch_size = 10000
@@ -18,11 +18,9 @@ evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_s
 
 result_list = list()
 for i in range(1, 31):
-    if i == 7:
-        continue
     correct_list = list()
     with torch.no_grad():
-        state_dict = torch.load('../CNN-30/CIFAR_20/iter-%s.pt' % i)
+        state_dict = torch.load('../CNN-30/CIFAR_17/iter-%s.pt' % i)
         model.load_state_dict(state_dict)
 
         start_index = 0
@@ -36,9 +34,9 @@ for i in range(1, 31):
     result_list.append(torch.hstack(correct_list))
     print(i)
 
-torch.save(torch.vstack(result_list), "./data/CNN-30-CIFAR_20-result.pt")
+torch.save(torch.vstack(result_list), "./data/CNN-30-CIFAR_17-result.pt")
 
-result = torch.load("./data/CNN-30-CIFAR_20-result.pt")
+result = torch.load("./data/CNN-30-CIFAR_17-result.pt")
 correct_num = result.sum(dim=1)
 occur = result.int().sum(dim=0)
 
@@ -97,7 +95,7 @@ for i in range(50000):
 # plt.ylabel('num')
 # plt.show()
 #
-torch.save(lst_2, "./data/CNN-30-CIFAR_20-lower_10.pt")
+torch.save(lst_2, "./data/CNN-30-CIFAR_17-lower_10.pt")
 print(len(lst_2))
 # print(lst_1)
 # print(len(lst_2))
