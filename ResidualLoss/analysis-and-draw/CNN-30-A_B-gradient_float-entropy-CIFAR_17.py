@@ -1,3 +1,5 @@
+import math
+
 import torch
 import matplotlib.pyplot as plt
 import os
@@ -74,6 +76,9 @@ for name, param in model.named_parameters():
 plt.rcParams['figure.figsize'] = (12.0, 12.0)
 # plt.rcParams['figure.dpi'] = 100
 
+lst = list()
+bin_num = 10
+
 start_x = 0
 for name, grad_A in grad_A_dict.items():
     grad_B = grad_B_dict[name]
@@ -88,17 +93,48 @@ for name, grad_A in grad_A_dict.items():
         for j in range(in_channel):
             for k in range(3):
                 for l in range(3):
-                    if conflict_grad_loc[i, j, k, l]:
+                    if conflict_grad_loc[i, j, k, l].item():
                         final_grad[i, j, k, l] = torch.abs(grad_A[i, j, k, l] - grad_B[i, j, k, l])
+                        lst.append(final_grad[i, j, k, l].item())
+                    else:
+                        lst.append(0)
 
-    final_grad = final_grad.sum(dim=(2, 3))
-    final_grad /= final_grad.max()
-    print(final_grad)
+    local_max = final_grad.max()
+    local_min = final_grad.min()
+
+    bins = [list() for _ in range(bin_num)]
+    interval = local_max / bin_num
+    # print(final_grad)
 
     for i in range(output_channel):
         for j in range(in_channel):
-            color = str(1 - final_grad[i][j].item())
-            plt.plot([start_x, start_x + 1], [j, i], color=color)
+            for k in range(3):
+                for l in range(3):
+                    bin_id = int(final_grad[i, j, k, l].item() / interval)
+                    if bin_id == bin_num:
+                        bins[-1].append(final_grad[i, j, k, l].item())
+                    else:
+                        bins[bin_id].append(final_grad[i, j, k, l].item())
     start_x += 1
+    entropy = 0
+    print(final_grad.view(-1).size(0))
+    for bin in bins:
+        p = len(bin) / final_grad.view(-1).size(0)
+        entropy += -p * math.log2(p)
+    print(name, entropy)
 
-plt.show()
+global_max = max(lst)
+bins = [list() for _ in range(bin_num)]
+interval = global_max / bin_num
+for item in lst:
+    bin_id = int(item / interval)
+    if bin_id == bin_num:
+        bins[-1].append(item)
+    else:
+        bins[bin_id].append(item)
+
+entropy = 0
+for bin in bins:
+    p = len(bin) / len(lst)
+    entropy += -p * math.log2(p)
+print("global", entropy)
