@@ -119,7 +119,9 @@ for name, grad_A in grad_A_dict.items():
     entropy = 0
     print(final_grad.view(-1).size(0))
     for bin in bins:
-        p = len(bin) / final_grad.view(-1).size(0)
+        print(len(bin))
+        length = len(bin) if len(bin) > 0 else 1
+        p = length / final_grad.view(-1).size(0)
         entropy += -p * math.log2(p)
     print(name, entropy)
 
@@ -135,6 +137,8 @@ for item in lst:
 
 entropy = 0
 for bin in bins:
-    p = len(bin) / len(lst)
+    print(len(bin))
+    length = len(bin) if len(bin) > 0 else 1
+    p = length / len(lst)
     entropy += -p * math.log2(p)
 print("global", entropy)
