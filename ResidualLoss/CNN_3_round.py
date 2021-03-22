@@ -1,4 +1,6 @@
 import random
+import sys
+
 from torch.autograd import Variable
 from torch import optim
 
@@ -11,6 +13,24 @@ from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_t
 from ResidualLoss.model import CIFAR_17
 
 
+class Logger(object):
+    def __init__(self):
+        self.terminal = sys.stdout
+        log_loc = "./log/%s.txt" % sys.argv[0].split("/")[-1].split(".")[0]
+        self.log = open(log_loc, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+        self.log.flush()
+
+    def flush(self):
+        pass
+
+
+sys.stdout = Logger()
+
+
 def setup_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -21,7 +41,7 @@ def setup_seed(seed):
 
 
 setup_seed(1914)
-num_epochs = 100
+num_epochs = 10
 batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
@@ -98,9 +118,7 @@ def residual_train():
         total_train_loss_1 /= length
         total_correct_sum_1 += total_correct_1
         total_classification_loss_1 += total_train_loss_1
-        if epoch % 50 == 0:
-            print('epoch [{}/{}], loss-1:{:.4f} Accuracy-1: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_1, total_correct_1, length))
-            test()
+        print('epoch [{}/{}], loss-1:{:.4f} Accuracy-1: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_1, total_correct_1, length))
 
         total_train_loss_2 = 0
         total_correct_2 = 0
@@ -124,10 +142,8 @@ def residual_train():
         total_train_loss_2 /= length
         total_correct_sum_2 += total_correct_2
         total_classification_loss_2 += total_train_loss_2
-        if epoch % 50 == 0:
-            print('epoch [{}/{}], loss-2:{:.4f} Accuracy-2: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_2,
+        print('epoch [{}/{}], loss-2:{:.4f} Accuracy-2: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_2,
                                                                       total_correct_2, length))
-            test()
 
         total_train_loss_3 = 0
         total_correct_3 = 0
@@ -150,16 +166,14 @@ def residual_train():
         total_train_loss_3 /= length
         total_correct_sum_3 += total_correct_3
         total_classification_loss_3 += total_train_loss_3
-        if epoch % 50 == 0:
-            print('epoch [{}/{}], loss-3:{:.4f} Accuracy-3: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_3,
+        print('epoch [{}/{}], loss-3:{:.4f} Accuracy-3: {}/{}'.format(epoch + 1, num_epochs, total_train_loss_3,
                                                                       total_correct_3, length))
-            test()
 
-        final_test = test_train()
-        final_ref = test_train_ref()
-        if final_test > final_ref:
-            print("Updating Ref: epoch: {}, accuracy: {} to {}".format(epoch, final_ref, final_test))
-            ref_model.load_state_dict(model.state_dict())
+        # final_test = test_train()
+        # final_ref = test_train_ref()
+        # if final_test > final_ref:
+        #     print("Updating Ref: epoch: {}, accuracy: {} to {}".format(epoch, final_ref, final_test))
+        ref_model.load_state_dict(model.state_dict())
 
     print("average correct 1:", total_correct_sum_1 / num_epochs)
     print("average loss 1:", total_classification_loss_1 / num_epochs)
@@ -238,14 +252,14 @@ def test_train_ref():
 
 
 if __name__ == '__main__':
-    for j in [1000, 500, 200, 100, 75, 50, 25, 10, 5, 1, 0.5]:
+    for j in [50, 25, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]:
         alpha = j
         print(alpha)
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc_1 = "./CNN-New/layer-123-" + str(j) + ".pt"
-        torch.save(model.state_dict(), loc_1)
-        loc_2 = "./CNN-New/ref-layer-123-" + str(j) + ".pt"
-        torch.save(ref_model.state_dict(), loc_2)
+        # loc_1 = "./CNN-New/layer-123-" + str(j) + ".pt"
+        # torch.save(model.state_dict(), loc_1)
+        # loc_2 = "./CNN-New/ref-layer-123-" + str(j) + ".pt"
+        # torch.save(ref_model.state_dict(), loc_2)
         print(alpha)
