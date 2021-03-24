@@ -76,7 +76,7 @@ def residual_train():
 
             ref_output, ref_features = ref_model.features(img)
             ref_pred = ref_output.argmax(dim=1)
-            ref_list = - 2 * ref_pred.eq(target.cuda()).int() + 1
+            ref_list = 2 * ref_pred.eq(target.cuda()).int() - 1
 
             loss1 = 0
             for i in [2]:
@@ -87,7 +87,7 @@ def residual_train():
                 normalize_ref_feature = F.normalize(resize_ref_feature, dim=1).detach()
                 normalize_feature = F.normalize(resize_feature, dim=1)
 
-                temp_loss = torch.mul(normalize_feature, normalize_ref_feature).sum(dim=1)
+                temp_loss = torch.norm(normalize_ref_feature - normalize_feature, p=2, dim=1)
                 loss1 += (temp_loss * ref_list).sum()
 
             loss = F.nll_loss(output, target.cuda())
