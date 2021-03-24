@@ -1,4 +1,6 @@
 import random
+import sys
+
 from torch.autograd import Variable
 from torch import optim
 
@@ -10,6 +12,24 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 
 from ResidualLoss.dataset import cifar10_data_loader_test, cifar10_data_loader_train, cifar10_dataset_train
 from ResidualLoss.model import CIFAR_17
+
+
+class Logger(object):
+    def __init__(self):
+        self.terminal = sys.stdout
+        log_loc = "./log/%s.txt" % sys.argv[0].split("/")[-1].split(".")[0]
+        self.log = open(log_loc, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+        self.log.flush()
+
+    def flush(self):
+        pass
+
+
+sys.stdout = Logger()
 
 
 def setup_seed(seed):
@@ -76,7 +96,7 @@ def residual_train():
                 total_correct += pred.eq(target.view_as(pred)).sum().item()
 
         for idx in range(train_data_length):
-            if losses[idx] > 1.2 or losses[idx] < 0.8:
+            if losses[idx] > 1.15 or losses[idx] < 0.85:
                 probs[idx] = 1
             else:
                 probs[idx] = beta
@@ -122,7 +142,6 @@ def residual_train():
         total_classification_loss += total_train_loss
         if epoch % 50 == 0:
             print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
-            test()
         ref_model.load_state_dict(model.state_dict())
 
     print("average correct:", total_correct_sum / num_epochs)
@@ -153,12 +172,12 @@ def test():
 
 
 if __name__ == '__main__':
-    for j in [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]:
+    for j in [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]:
         beta = j
         print(beta)
         ref_model.load_state_dict(state_dict)
         model.load_state_dict(state_dict)
         residual_train()
-        loc = "./CNN-l2-freeze-prob/beta-" + str(j) + ".pt"
-        torch.save(model.state_dict(), loc)
+        # loc = "./CNN-l2-freeze-prob/beta-" + str(j) + ".pt"
+        # torch.save(model.state_dict(), loc)
         print(beta)
