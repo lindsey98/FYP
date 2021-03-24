@@ -1,0 +1,80 @@
+10
+epoch [1/200], loss:0.7150 Accuracy: 37520/50000
+epoch [51/200], loss:0.7142 Accuracy: 37566/50000
+epoch [101/200], loss:0.7130 Accuracy: 37582/50000
+epoch [151/200], loss:0.7138 Accuracy: 37543/50000
+average correct: 37567.88
+average loss: 0.7135937077392575
+10
+5
+epoch [1/200], loss:0.7150 Accuracy: 37548/50000
+epoch [51/200], loss:0.7130 Accuracy: 37588/50000
+epoch [101/200], loss:0.7111 Accuracy: 37622/50000
+epoch [151/200], loss:0.7102 Accuracy: 37616/50000
+average correct: 37607.07
+average loss: 0.7116466169136045
+5
+1
+epoch [1/200], loss:0.7155 Accuracy: 37510/50000
+epoch [51/200], loss:0.7138 Accuracy: 37596/50000
+epoch [101/200], loss:0.7143 Accuracy: 37515/50000
+epoch [151/200], loss:0.7131 Accuracy: 37611/50000
+average correct: 37573.12
+average loss: 0.7135443820865628
+1
+0.5
+epoch [1/200], loss:0.7146 Accuracy: 37579/50000
+epoch [51/200], loss:0.7141 Accuracy: 37558/50000
+epoch [101/200], loss:0.7136 Accuracy: 37572/50000
+epoch [151/200], loss:0.7126 Accuracy: 37607/50000
+average correct: 37572.64
+average loss: 0.7135189336803436
+0.5
+0.1
+epoch [1/200], loss:0.7153 Accuracy: 37552/50000
+epoch [51/200], loss:0.7136 Accuracy: 37581/50000
+epoch [101/200], loss:0.7144 Accuracy: 37564/50000
+epoch [151/200], loss:0.7131 Accuracy: 37584/50000
+average correct: 37577.02
+average loss: 0.7135294248550409
+0.1
+0.05
+epoch [1/200], loss:0.7148 Accuracy: 37562/50000
+epoch [51/200], loss:0.7140 Accuracy: 37568/50000
+epoch [101/200], loss:0.7136 Accuracy: 37478/50000
+epoch [151/200], loss:0.7121 Accuracy: 37591/50000
+average correct: 37580.67
+average loss: 0.7133010115856173
+0.05
+0.01
+epoch [1/200], loss:0.7164 Accuracy: 37508/50000
+epoch [51/200], loss:0.7157 Accuracy: 37522/50000
+epoch [101/200], loss:0.7143 Accuracy: 37537/50000
+epoch [151/200], loss:0.7159 Accuracy: 37564/50000
+average correct: 37551.47
+average loss: 0.71506672141037
+0.01
+0.005
+epoch [1/200], loss:0.7160 Accuracy: 37551/50000
+epoch [51/200], loss:0.7165 Accuracy: 37543/50000
+epoch [101/200], loss:0.7158 Accuracy: 37507/50000
+epoch [151/200], loss:0.7155 Accuracy: 37612/50000
+average correct: 37531.96
+average loss: 0.7159244177852631
+0.005
+0.001
+epoch [1/200], loss:0.7188 Accuracy: 37469/50000
+epoch [51/200], loss:0.7182 Accuracy: 37472/50000
+epoch [101/200], loss:0.7167 Accuracy: 37501/50000
+epoch [151/200], loss:0.7156 Accuracy: 37600/50000
+average correct: 37523.035
+average loss: 0.7167277375759127
+0.001
+0.0005
+epoch [1/200], loss:0.7176 Accuracy: 37543/50000
+epoch [51/200], loss:0.7175 Accuracy: 37520/50000
+epoch [101/200], loss:0.7163 Accuracy: 37509/50000
+epoch [151/200], loss:0.7165 Accuracy: 37555/50000
+average correct: 37523.955
+average loss: 0.7167819992832181
+0.0005
