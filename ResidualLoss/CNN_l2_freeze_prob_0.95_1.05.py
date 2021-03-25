@@ -96,7 +96,7 @@ def residual_train():
                 total_correct += pred.eq(target.view_as(pred)).sum().item()
 
         for idx in range(train_data_length):
-            if losses[idx] > 1.15 or losses[idx] < 0.85:
+            if losses[idx] > 1.05 or losses[idx] < 0.95:
                 probs[idx] = 1
             else:
                 probs[idx] = beta

@@ -17,7 +17,7 @@ from ResidualLoss.model import CIFAR_17
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        log_loc = "./log/%s.txt" % sys.argv[0].split("/")[-1].split(".")[0]
+        log_loc = "./log/%s.txt" % sys.argv[0].split("/")[-1].split(".py")[0]
         self.log = open(log_loc, "a")
 
     def write(self, message):
@@ -44,7 +44,7 @@ def setup_seed(seed):
 setup_seed(1914)
 num_epochs = 200
 batch_size = 100
-evaluation_batch_size = 10000
+evaluation_batch_size = 100
 learning_rate = 0.0001
 alpha = 0.05
 beta = 5
