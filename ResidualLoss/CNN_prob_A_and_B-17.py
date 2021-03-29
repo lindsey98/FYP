@@ -48,6 +48,7 @@ evaluation_batch_size = 2500
 learning_rate = 0.0001
 
 model = CIFAR_17().cuda()
+state_dict = torch.load('./CIFAR-17-1.pt')
 model.train()
 
 # optimizer = optim.Adam([
@@ -69,10 +70,16 @@ test_data_loader = cifar10_data_loader_test(batch_size)
 
 def residual_train():
     prob = torch.zeros(len(train_dataset), dtype=torch.float64).cuda()
-    A, B = torch.load("./analysis-and-draw/data/CNN-30-A-B.pt")
-    for i in range(train_data_length):
-        if i in A or i in B:
-            prob[i] = 1
+    _, init_train_list, init_not_train_list, after_train_list, after_not_train_list = torch.load(
+        "./analysis-and-draw/data/CNN-30-CIFAR_17-A_B.pt")
+
+    B_17 = set(init_train_list) - set(after_train_list)
+    A_17 = set(after_not_train_list) - set(init_not_train_list)
+
+    for idx in B_17:
+        prob[idx] = 1
+    for idx in A_17:
+        prob[idx] = 1
     sampler.weights = prob
     print(prob.sum())
 
@@ -115,6 +122,7 @@ def residual_train():
 
 
 if __name__ == '__main__':
+    model.load_state_dict(state_dict)
     residual_train()
-    loc = "./CNN-30/A_and_B-reinit.pt"
+    loc = "./CNN-30/A_and_B-17.pt"
     torch.save(model.state_dict(), loc)
