@@ -1,21 +1,8 @@
 import torch
 import matplotlib.pyplot as plt
-import PIL
 import os
 import numpy as np
 from matplotlib import ticker
-from torchvision.datasets import CIFAR10
-
-
-from ResidualLoss.dataset import cifar10_data_loader_train
-from ResidualLoss.model import CIFAR_17
-
-model = CIFAR_17().cuda()
-model.eval()
-
-evaluation_batch_size = 10000
-evaluation_data_loader = cifar10_data_loader_train(batch_size=evaluation_batch_size, shuffle=False, loc="../../data")
-
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -29,22 +16,14 @@ for i in range(31):
 
 lst1 = [0] * 31
 lst2 = [0] * 31
-state_dict = torch.load('../CIFAR-17-1.pt')
-model.load_state_dict(state_dict)
 
-start_index = 0
-for data, target in evaluation_data_loader:
-    data, target = data.cuda(), target.cuda()
-    output = model(data)
+false_list = torch.load("../analysis-and-draw/data/CNN_CIFAR_17-false.pt")
 
-    pred = output.argmax(dim=1)
-    correct = pred.eq(target)
-    for i in range(evaluation_batch_size):
-        if not correct[i].item():
-            lst2[occur[start_index + i]] += 1
-        else:
-            lst1[occur[start_index + i]] += 1
-    start_index += evaluation_batch_size
+for i in range(50000):
+    if i in false_list:
+        lst2[occur[i]] += 1
+    else:
+        lst1[occur[i]] += 1
 
 for i in range(31):
     assert lst1[i] + lst2[i] == lst[i]
