@@ -93,9 +93,10 @@ def residual_train(l1, l2, l3):
 
 if __name__ == '__main__':
     lst = [
-        (10, 10, 8),
-        (10, 10, 9),
-        (10, 10, 10),
+        (10, 8, 10),
+        (10, 9, 8),
+        (10, 9, 9),
+        (10, 9, 10),
     ]
     for a, b, c in lst:
         residual_train(a, b, c)
