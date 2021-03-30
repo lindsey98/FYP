@@ -87,15 +87,24 @@ def residual_train():
 
     for epoch in range(num_epochs):
         total_correct = 0
+        total_correct_1 = 0
         model.eval()
 
         with torch.no_grad():
+            start_index = 0
             for data, target in evaluation_data_loader:
                 data, target = data.cuda(), target.cuda()
                 output = model(data)
 
                 pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-                total_correct += pred.eq(target.view_as(pred)).sum().item()
+                correct_lst = pred.eq(target.view_as(pred)).squeeze()
+                total_correct += correct_lst.sum().item()
+                
+                for i in range(evaluation_batch_size):
+                    if start_index + i in A_17 or start_index + i in B_17:
+                        if correct_lst[i]:
+                            total_correct_1 += 1
+                start_index += evaluation_batch_size
 
         model.train()
         total_train_loss = 0
@@ -114,7 +123,7 @@ def residual_train():
         total_train_loss /= train_data_length
         total_correct_sum += total_correct
         total_classification_loss += total_train_loss
-        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length))
+        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{} Extra: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, train_data_length, total_correct_1, len(A_17) + len(B_17)))
 
     print("average correct:", total_correct_sum / num_epochs)
     print("average loss:", total_classification_loss / num_epochs)

@@ -42,7 +42,7 @@ def setup_seed(seed):
 
 
 setup_seed(1914)
-num_epochs = 2000
+num_epochs = 200
 batch_size = 100
 evaluation_batch_size = 2500
 learning_rate = 0.0001
