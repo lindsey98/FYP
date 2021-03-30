@@ -13,7 +13,8 @@ model = CIFAR_17().cuda()
 model.train()
 learning_rate = 0.0001
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
-state_dict = torch.load('../CNN-Train/CIFAR_17/false_epoch-2000.pt')
+# state_dict = torch.load('../CNN-Train/CIFAR_17/false_epoch-2000.pt')
+state_dict = torch.load('../CIFAR-17-1.pt')
 model.load_state_dict(state_dict)
 train_dataset = cifar10_dataset_train(loc="../../data")
 
@@ -74,6 +75,13 @@ for name, param in model.named_parameters():
 color_dict = [str(i / 10) for i in reversed(range(0, 10))]
 
 plt.rcParams['figure.figsize'] = (12.0, 12.0)
+ax = plt.gca()
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.spines['left'].set_color('none')
+ax.spines['bottom'].set_color('none')
+ax.set_xticks([])
+ax.set_yticks([])
 # plt.rcParams['figure.dpi'] = 100
 
 start_x = 0
