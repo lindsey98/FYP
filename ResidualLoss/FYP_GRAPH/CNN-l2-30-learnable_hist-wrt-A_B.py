@@ -17,19 +17,22 @@ for i in range(31):
 lst1 = [0] * 31
 lst2 = [0] * 31
 
-false_list = torch.load("../analysis-and-draw/data/CNN_CIFAR_17-false.pt")
+_, init_train_list, init_not_train_list, after_train_list, after_not_train_list = torch.load(
+    "../analysis-and-draw/data/CNN-30-CIFAR_17-A_B.pt")
+
+B_17 = set(init_train_list) - set(after_train_list)
+A_17 = set(after_not_train_list) - set(init_not_train_list)
 
 for i in range(50000):
-    if i in false_list:
+    if i in B_17:
         lst2[occur[i]] += 1
-    else:
+    elif i in A_17:
         lst1[occur[i]] += 1
 
-for i in range(31):
-    assert lst1[i] + lst2[i] == lst[i]
 
 plt.rcParams['figure.figsize'] = (10.0, 6.0)
 
+plt.title("Learnable Rate Histogram Against A B")
 plt.bar(np.arange(31), lst, width=0.25, label="All Samples")
 plt.bar(np.arange(31) + 0.25, lst1, width=0.25, label="Correct Samples in Model to Fix")
 plt.bar(np.arange(31) + 0.5, lst2, width=0.25, label="Wrong Samples in Model to Fix")
