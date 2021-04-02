@@ -37,7 +37,8 @@ epoch [101/200], loss:1.2592 Accuracy: 28027/50000
 epoch [151/200], loss:1.2608 Accuracy: 28179/50000
 average correct: 30137.905
 average loss: 1.3536121303291322
-81.5
+8
+1.5
 epoch [1/200], loss:0.8523 Accuracy: 37621/50000
 epoch [51/200], loss:0.8598 Accuracy: 37686/50000
 epoch [101/200], loss:0.8634 Accuracy: 37688/50000
