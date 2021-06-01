@@ -12,10 +12,10 @@ class SubSampler(Sampler):
         self.idlist = idlist
 
     def __iter__(self):
-        return (self.indices[i] for i in self.idlist)
+        return iter(self.idlist)
 
     def __len__(self):
-        return len(self.mask)
+        return len(self.idlist)
     
 minst_transform = transforms.Compose([
     transforms.ToTensor(),
@@ -57,43 +57,43 @@ def cifar10_dataset_train(loc='./data'):
     return CIFAR10(loc, transform=cifar10_transform, train=True, download=True)
 
 
-def cifar10_data_loader_test(batch_size, shuffle=True, loc='./data'):
+def cifar10_data_loader_test(batch_size, shuffle=True, loc='./data', drop_last=False):
     '''
     Create dataloader
     '''
     test_dataset = CIFAR10(loc, transform=cifar10_transform, train=False, download=True)
-    return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle)
+    return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
 
 
-def cifar10_data_loader_train(batch_size, shuffle=True, loc='./data'):
+def cifar10_data_loader_train(batch_size, shuffle=True, loc='./data', drop_last=False):
     '''
     Create dataloader
     '''
     train_dataset = CIFAR10(loc, transform=cifar10_transform, download=True)
-    return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
+    return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
 
 
 # One small remark: apparently sampler is not compatible with shuffle, so in order to achieve the same result one can do: torch.utils.data.DataLoader(trainset, batch_size=4, sampler=SubsetRandomSampler(np.where(mask)[0]),shuffle=False, num_workers=2)
-def cifar10_data_loader_test_subsample(batch_size, subsample_id, shuffle=False, loc='./data'):
+def cifar10_data_loader_test_subsample(batch_size, subsample_id, shuffle=False, loc='./data', drop_last=False):
     '''
     Create dataloader with only certain indices
     '''
     test_dataset = CIFAR10(loc, transform=cifar10_transform, train=False, download=True)
     sampler = SubSampler(subsample_id)
     if shuffle == False:
-        return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler)
+        return DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler, drop_last=drop_last)
     else:
-        return DataLoader(test_dataset, batch_size=batch_size, sampler=SubsetRandomSampler(subsample_id),shuffle=False)
+        return DataLoader(test_dataset, batch_size=batch_size, sampler=SubsetRandomSampler(subsample_id),shuffle=False, drop_last=drop_last)
 
 
-def cifar10_data_loader_train_subsample(batch_size, subsample_id, shuffle=False, loc='./data'):
+def cifar10_data_loader_train_subsample(batch_size, subsample_id, shuffle=False, loc='./data', drop_last=False):
     '''
     Create dataloader with only certain indices
     '''
     train_dataset = CIFAR10(loc, transform=cifar10_transform, download=True)
     sampler = SubSampler(subsample_id)
     if shuffle == False:
-        return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler)
+        return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler, drop_last=drop_last)
     else:
-        return DataLoader(train_dataset, batch_size=batch_size, sampler=SubsetRandomSampler(subsample_id),shuffle=False)
+        return DataLoader(train_dataset, batch_size=batch_size, sampler=SubsetRandomSampler(subsample_id),shuffle=False, drop_last=drop_last)
         

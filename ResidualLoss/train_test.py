@@ -9,7 +9,7 @@ from ResidualLoss.model import *
 import argparse
 from tqdm import tqdm
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -110,6 +110,7 @@ def test_correct(model, test_data_loader):
     return correct
     
     
+    
 
 if __name__ == '__main__':
     
@@ -122,6 +123,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--trail', type=int, default=1, help='index of trained model')
+    parser.add_argument('--retrain', type=bool, default=False, help='normal training or model retraining')
+    parser.add_argument('--weights', type=str, default='.', help='pretrained weights')
     
     
     args = parser.parse_args()
@@ -150,6 +153,10 @@ if __name__ == '__main__':
     else:
         raise NotImplementError
     
+    if args.retrain == True:
+        # load pretrained model
+        model.load_from(args.weights)
+        
     # train ! 
     train(model, 
           model_name,
