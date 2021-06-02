@@ -1,3 +1,6 @@
+## Introduction
+In this project, we are going to explore the gradient contradiction behavior in underfitting model
+
 ## Install
 1. Python 3.7
 2. pip install -r requirement.txt
