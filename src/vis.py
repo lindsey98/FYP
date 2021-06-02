@@ -2,6 +2,7 @@
 from src.train_test import test
 import numpy as np
 import matplotlib.pyplot as plt
+import torch
 
 def plot_training_acc( model, train_data_loader,
                       model_name, data_name, total_trails,):
@@ -12,7 +13,7 @@ def plot_training_acc( model, train_data_loader,
         checkpoint = 'checkpoints/{}-{}-model{}/999.pt'.format(model_name, data_name, trail)
         model.load_state_dict(torch.load(checkpoint))
         print('Trail {}'.format(str(trail)))
-        train_acc = test(model, train_data_loader, criterion=nn.CrossEntropyLoss(reduction='sum'))
+        train_acc = test(model, train_data_loader, criterion=torch.nn.CrossEntropyLoss(reduction='sum'))
         training_acc_list.append(train_acc)
     
     # plot training acc
