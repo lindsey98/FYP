@@ -4,8 +4,8 @@ from torch import optim, save, load
 import torch.nn.functional as F
 import torch
 
-from ResidualLoss.dataset import *
-from ResidualLoss.model import *
+from src.dataset import *
+from src.model import *
 import argparse
 from tqdm import tqdm
 import os
