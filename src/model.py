@@ -60,7 +60,7 @@ class CIFAR_17_Add(CIFAR_17):
         super(CIFAR_17_Add, self).__init__()
         self.extra_filter = extra_filter
         self.extra_size = extra_size
-        assert np.sum([(x+3)%2==1 for x in self.extra_size]) == 3 # kernel size should be even
+        assert np.sum([(x+3)%2==1 for x in self.extra_size]) == 3 # kernel size should be odd
         
         self.body = nn.Sequential(OrderedDict([
             ('cnn1', nn.Sequential(OrderedDict([

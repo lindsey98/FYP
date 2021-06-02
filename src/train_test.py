@@ -9,7 +9,6 @@ from src.model import *
 import argparse
 from tqdm import tqdm
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -142,7 +141,7 @@ if __name__ == '__main__':
     model = model.to(device)
     
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(reduction='sum')
     
     # create dataloader
     train_data_loader = data_loader(dataset_name = dataset, 

@@ -19,6 +19,7 @@ class SubSampler(Sampler):
     
     
 def data_loader(dataset_name, batch_size, train=True, subsample_id=None, shuffle=False):
+    # define dataset & transformation
     if dataset_name == 'MNIST':
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -43,6 +44,7 @@ def data_loader(dataset_name, batch_size, train=True, subsample_id=None, shuffle
     else: 
         raise NotImplementError
     
+    # Load subset of data or full data
     if subsample_id is None:
         return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     else:
@@ -50,7 +52,8 @@ def data_loader(dataset_name, batch_size, train=True, subsample_id=None, shuffle
         if shuffle == False:
             return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler, drop_last=False)
         else:
-            # SubSampler does not support shuffle, so we need to use SubsetRandomSampler in order to get re-arranged batch
+            # SubSampler does not support shuffle by default
+            # So we need to use SubsetRandomSampler in order to get re-arranged batch
             return DataLoader(dataset, batch_size=batch_size, sampler=SubsetRandomSampler(subsample_id), 
                               shuffle=shuffle, drop_last=False)
 
