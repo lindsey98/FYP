@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from collections import OrderedDict
+import numpy as np
 
     
 class CIFAR_17(nn.Module):
@@ -52,24 +53,31 @@ class CIFAR_17(nn.Module):
     
 class CIFAR_17_Add(CIFAR_17):
     '''
-    Add extra CNN filters on certain CNN layer(s)
+    Add extra CNN filters/ Increase CNN filter size on certain CNN layer(s)
     '''
-    def __init__(self, extra_filter=[0, 0, 0], head_size=10):
+    def __init__(self, extra_filter=[0, 0, 0], extra_size=[0, 0, 0], head_size=10):
+        
         super(CIFAR_17_Add, self).__init__()
         self.extra_filter = extra_filter
+        self.extra_size = extra_size
+        assert np.sum([(x+3)%2==1 for x in self.extra_size]) == 3 # kernel size should be even
+        
         self.body = nn.Sequential(OrderedDict([
             ('cnn1', nn.Sequential(OrderedDict([
-                            ('conv', nn.Conv2d(3, 8+extra_filter[0], 3, 1, 1)),
+                            ('conv', nn.Conv2d(in_channels=3, out_channels=8+extra_filter[0], 
+                                               kernel_size=3+extra_size[0], stride=1, padding=(3+extra_size[0])//2)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),
             ('cnn2', nn.Sequential(OrderedDict([
-                            ('conv', nn.Conv2d(8+extra_filter[0], 8+extra_filter[1], 3, 1, 1)),
+                            ('conv', nn.Conv2d(in_channels=8+extra_filter[0], out_channels=8+extra_filter[1], 
+                                               kernel_size=3+extra_size[1], stride=1, padding=(3+extra_size[1])//2)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),             
             ('cnn3', nn.Sequential(OrderedDict([
-                            ('conv', nn.Conv2d(8+extra_filter[1], 8+extra_filter[2], 3, 1, 1)),
+                            ('conv', nn.Conv2d(in_channels=8+extra_filter[1], out_channels=8+extra_filter[2], 
+                                               kernel_size=3+extra_size[2], stride=1, padding=(3+extra_size[2])//2)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2)),
                         ])))
@@ -86,31 +94,32 @@ class CIFAR_17_Add(CIFAR_17):
     def load_from(self, weights_path):
         pretrain_weights = torch.load(weights_path)
         with torch.no_grad():
-            if extra_filter[1] == 0 and extra_filter[2] == 0:
-                self.body.cnn3.conv.weight.copy_ (pretrain_weights['body.cnn3.conv.weight']) 
-                self.head.dense.fc1.weight.copy_ (pretrain_weights['head.dense.fc1.weight'])
-                self.head.dense.fc2.weight.copy_ (pretrain_weights['head.dense.fc2.weight'])
-            elif extra_filter[0] == 0 and extra_filter[2] == 0:
+            if self.extra_filter[0] == 0 and self.extra_size[0] == 0:
                 self.body.cnn1.conv.weight.copy_ (pretrain_weights['body.cnn1.conv.weight'])
-                self.head.dense.fc1.weight.copy_ (pretrain_weights['head.dense.fc1.weight'])
-                self.head.dense.fc2.weight.copy_ (pretrain_weights['head.dense.fc2.weight'])
-            elif extra_filter[0] == 0 and extra_filter[1] == 0:
-                self.body.cnn1.conv.weight.copy_ (pretrain_weights['body.cnn1.conv.weight'])
-                self.body.cnn2.conv.weight.copy_ (pretrain_weights['body.cnn2.conv.weight'])
-                self.head.dense.fc2.weight.copy_ (pretrain_weights['head.dense.fc2.weight'])
-
                 
+            if self.extra_filter[1] == 0 and self.extra_size[1] == 0 and self.extra_filter[0] == 0:
+                self.body.cnn2.conv.weight.copy_ (pretrain_weights['body.cnn2.conv.weight'])
+            
+            if self.extra_filter[2] == 0 and self.extra_size[2] == 0 and self.extra_filter[1] == 0:
+                self.body.cnn3.conv.weight.copy_ (pretrain_weights['body.cnn3.conv.weight']) 
+                
+            if self.extra_filter[2] == 0:
+                self.head.dense.fc1.weight.copy_ (pretrain_weights['head.dense.fc1.weight'])
+                
+            self.head.dense.fc2.weight.copy_ (pretrain_weights['head.dense.fc2.weight'])
 
         
     
 KNOWN_MODELS = OrderedDict([
     ('CIFAR17', lambda *a, **kw: CIFAR_17(10, *a, **kw)),
-    ('CIFAR17_add1', lambda *a, **kw: CIFAR_17_Add([1, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_add2', lambda *a, **kw: CIFAR_17_Add([0, 1, 0],10, *a, **kw)),
-    ('CIFAR17_add3', lambda *a, **kw: CIFAR_17_Add([0, 0, 1],10, *a, **kw)),
-    ('CIFAR17_double1', lambda *a, **kw: CIFAR_17_Add([8, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_double2', lambda *a, **kw: CIFAR_17_Add([0, 8, 0],10, *a, **kw)),
-    ('CIFAR17_double3', lambda *a, **kw: CIFAR_17_Add([0, 0, 8],10, *a, **kw)),
-    
+    ('CIFAR17_add1', lambda *a, **kw: CIFAR_17_Add([1, 0, 0], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_add2', lambda *a, **kw: CIFAR_17_Add([0, 1, 0], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_add3', lambda *a, **kw: CIFAR_17_Add([0, 0, 1], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_double1', lambda *a, **kw: CIFAR_17_Add([8, 0, 0], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_double2', lambda *a, **kw: CIFAR_17_Add([0, 8, 0], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_double3', lambda *a, **kw: CIFAR_17_Add([0, 0, 8], [0, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_filter1', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [2, 0, 0], 10, *a, **kw)),
+    ('CIFAR17_filter2', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [0, 2, 0], 10, *a, **kw)),
+    ('CIFAR17_filter3', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [0, 0, 2], 10, *a, **kw)),
 ])
 
