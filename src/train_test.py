@@ -144,15 +144,13 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     criterion = nn.CrossEntropyLoss()
     
-    if dataset == "CIFAR10":
-        train_data_loader = cifar10_data_loader_train(batch_size)
-        test_data_loader = cifar10_data_loader_test(batch_size)
-    elif dataset == "MNIST":
-        train_data_loader = minst_data_loader_train(batch_size)
-        test_data_loader = minst_data_loader_test(batch_size)   
-    else:
-        raise NotImplementError
-    
+    # create dataloader
+    train_data_loader = data_loader(dataset_name = dataset, 
+                                    batch_size = batch_size, 
+                                    train=True)
+    test_data_loader = data_loader(dataset_name = dataset, 
+                                    batch_size = batch_size, 
+                                    train=False)    
     if args.retrain == True:
         # load pretrained model
         model.load_from(args.weights)
