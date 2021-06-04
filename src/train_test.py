@@ -119,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_name', type=str, required=True,
                         help='dataset you want to train')
     parser.add_argument('--batch_size', type=int, default=256, help='batch size')
-    parser.add_argument('--epochs', type=int, default=1000, help='number of epochs to train')
+    parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--trail', type=int, default=1, help='index of trained model')
     parser.add_argument('--retrain', type=bool, default=False, help='normal training or model retraining')
@@ -137,7 +137,7 @@ if __name__ == '__main__':
    
     
     # load model
-    model = KNOWN_MODELS[model_name]()
+    model = KNOWN_MODELS[model_name]
     model = model.to(device)
     
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)

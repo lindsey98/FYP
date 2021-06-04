@@ -111,15 +111,18 @@ class CIFAR_17_Add(CIFAR_17):
         
     
 KNOWN_MODELS = OrderedDict([
-    ('CIFAR17', lambda *a, **kw: CIFAR_17(10, *a, **kw)),
-    ('CIFAR17_add1', lambda *a, **kw: CIFAR_17_Add([1, 0, 0], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_add2', lambda *a, **kw: CIFAR_17_Add([0, 1, 0], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_add3', lambda *a, **kw: CIFAR_17_Add([0, 0, 1], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_double1', lambda *a, **kw: CIFAR_17_Add([8, 0, 0], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_double2', lambda *a, **kw: CIFAR_17_Add([0, 8, 0], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_double3', lambda *a, **kw: CIFAR_17_Add([0, 0, 8], [0, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_filter1', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [2, 0, 0], 10, *a, **kw)),
-    ('CIFAR17_filter2', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [0, 2, 0], 10, *a, **kw)),
-    ('CIFAR17_filter3', lambda *a, **kw: CIFAR_17_Add([0, 0, 0], [0, 0, 2], 10, *a, **kw)),
+    ('CIFAR17', CIFAR_17(10)),
+    ('CIFAR17_double1', CIFAR_17_Add([8, 0, 0], [0, 0, 0], 10)),
+    ('CIFAR17_double2', CIFAR_17_Add([0, 8, 0], [0, 0, 0], 10)),
+    ('CIFAR17_double3', CIFAR_17_Add([0, 0, 8], [0, 0, 0], 10)),
+    ('CIFAR17_filter1', CIFAR_17_Add([0, 0, 0], [2, 0, 0], 10)),
+    ('CIFAR17_filter2', CIFAR_17_Add([0, 0, 0], [0, 2, 0], 10)),
+    ('CIFAR17_filter3', CIFAR_17_Add([0, 0, 0], [0, 0, 2], 10)),
 ])
 
+for i in range(0, 9):
+    for j in range(0, 9):
+        for k in range(0, 9):
+            KNOWN_MODELS['CIFAR17_add{}'.format(str(i)+str(j)+str(k))] = CIFAR_17_Add([i, j, k], [0, 0, 0], 10)
+            
+# print(KNOWN_MODELS.keys())

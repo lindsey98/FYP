@@ -10,7 +10,7 @@ def plot_training_acc( model, train_data_loader,
     # training acc
     training_acc_list = []
     for trail in range(1, total_trails+1):
-        checkpoint = 'checkpoints/{}-{}-model{}/999.pt'.format(model_name, data_name, trail)
+        checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
         model.load_state_dict(torch.load(checkpoint))
         print('Trail {}'.format(str(trail)))
         train_acc = test(model, train_data_loader, criterion=torch.nn.CrossEntropyLoss(reduction='sum'))
@@ -18,7 +18,7 @@ def plot_training_acc( model, train_data_loader,
     
     # plot training acc
     plt.bar(range(1, total_trails+1), height=training_acc_list)
-    plt.ylim(bottom=70, top=77)
+    plt.ylim(bottom=70, top=80)
     plt.axhline(y=np.mean(training_acc_list), color='r', linestyle='-')
     plt.xlabel('Training model index')
     plt.ylabel('Training Acc')
