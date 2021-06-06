@@ -24,7 +24,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='Train underfitting model')
-    parser.add_argument('--model_name', type=str, required=True,
+    parser.add_argument('--model_name', type=str, required=True, 
                         help='base model (already been trained) to start with')
     parser.add_argument('--data_name', type=str, required=True,
                         help='dataset you want to train')
@@ -47,8 +47,8 @@ if __name__ == '__main__':
     trail = args.num_trail
     
     # create logger
-    if os.path.exists('log/train_trace.log'):
-        os.unlink('log/train_trace.log') # delete old log
+#     if os.path.exists('log/train_trace.log'):
+#         os.unlink('log/train_trace.log') # delete old log
     logging.basicConfig(filename='log/train_trace.log', level=logging.INFO)
     logger = logging.getLogger('trace')
 
