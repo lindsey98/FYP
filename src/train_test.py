@@ -14,18 +14,20 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 def train(model, 
-          data_name,
           model_name,
+          data_name,
           trail,
           train_data_loader, test_data_loader, 
-          criterion, optimizer):
+          criterion, optimizer,
+          num_epochs,
+          logger):
     
     '''
     Main model training logic
     '''
     
     length = len(train_data_loader.dataset)
-    print('length of training data', length)
+    logger.info('length of training data {}'.format(str(length)))
     best_test_acc = 0
     
     for epoch in range(num_epochs):
@@ -50,16 +52,20 @@ def train(model,
             total_correct += pred.eq(target.view_as(pred)).sum().item()
 
         total_train_loss /= length
-        print('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
-        test_acc = test(model, test_data_loader, criterion)
+        logger.info('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
+        test_acc = test(model, test_data_loader, criterion, logger)
         
         # save model
-        os.makedirs('./checkpoints/{}-{}-model{}/'.format(data_name, model_name, str(trail)), exist_ok=True)
-        location = './checkpoints/{}-{}-model{}/'.format(data_name, model_name, str(trail)) + str(epoch) + '.pt'
-        save(model.state_dict(), location)
+        os.makedirs('./checkpoints/{}-{}-model{}/'.format(model_name, data_name, str(trail)), exist_ok=True)
+        if epoch == num_epochs - 1 or epoch % 50 == 0:
+            location = './checkpoints/{}-{}-model{}/'.format( model_name, data_name, str(trail)) + str(epoch) + '.pt'
+            logger.info("Save model in {} at epoch {}".format(location, str(epoch)))
+            save(model.state_dict(), location)
+            
+    return model
 
 
-def test(model, test_data_loader, criterion):
+def test(model, test_data_loader, criterion, logger):
     '''
     Get testing accuracy
     '''
@@ -80,7 +86,7 @@ def test(model, test_data_loader, criterion):
 
     test_loss /= len(test_data_loader.dataset)
 
-    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    logger.info('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_data_loader.dataset),
         100. * correct / len(test_data_loader.dataset)))
     
@@ -160,4 +166,6 @@ if __name__ == '__main__':
           dataset, 
           trail,
           train_data_loader, test_data_loader, 
-          criterion, optimizer)
+          criterion, optimizer, 
+          num_epochs,
+          logger)

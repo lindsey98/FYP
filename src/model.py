@@ -120,9 +120,9 @@ KNOWN_MODELS = OrderedDict([
     ('CIFAR17_filter3', CIFAR_17_Add([0, 0, 0], [0, 0, 2], 10)),
 ])
 
-for i in range(0, 9):
-    for j in range(0, 9):
-        for k in range(0, 9):
+for i in range(0, 32):
+    for j in range(0, 32):
+        for k in range(0, 32):
             KNOWN_MODELS['CIFAR17_add{}'.format(str(i)+str(j)+str(k))] = CIFAR_17_Add([i, j, k], [0, 0, 0], 10)
             
 # print(KNOWN_MODELS.keys())

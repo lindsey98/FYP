@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 
 def plot_training_acc( model, train_data_loader,
-                      model_name, data_name, total_trails,):
+                      model_name, data_name, total_trails, logger, vis=True):
 
     # training acc
     training_acc_list = []
@@ -13,16 +13,19 @@ def plot_training_acc( model, train_data_loader,
         checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
         model.load_state_dict(torch.load(checkpoint))
         print('Trail {}'.format(str(trail)))
-        train_acc = test(model, train_data_loader, criterion=torch.nn.CrossEntropyLoss(reduction='sum'))
+        train_acc = test(model, train_data_loader, 
+                         criterion=torch.nn.CrossEntropyLoss(reduction='sum'),
+                         logger=logger)
         training_acc_list.append(train_acc)
     
     # plot training acc
-    plt.bar(range(1, total_trails+1), height=training_acc_list)
-    plt.ylim(bottom=70, top=80)
-    plt.axhline(y=np.mean(training_acc_list), color='r', linestyle='-')
-    plt.xlabel('Training model index')
-    plt.ylabel('Training Acc')
-    plt.show()
+    if vis == True:
+        plt.bar(range(1, total_trails+1), height=training_acc_list)
+        plt.ylim(bottom=70, top=80)
+        plt.axhline(y=np.mean(training_acc_list), color='r', linestyle='-')
+        plt.xlabel('Training model index')
+        plt.ylabel('Training Acc')
+        plt.show()
     
     print('Average training acc: {}'.format(np.mean(training_acc_list)))
     
@@ -79,3 +82,4 @@ def weight_contradict(pos_grad_dict, neg_grad_dict, method='sign'):
 
     plt.title('Weight contradiction {} visualization'.format(method))
     plt.show()
+
