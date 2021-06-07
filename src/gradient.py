@@ -16,7 +16,19 @@ def get_graddict(model,
                  pos_thre, neg_thre,
                  compute_index=True, 
                  vis=True, save=True):
-    
+    '''
+    Get gradient contradiction dictionary for anchor model
+    :param model: initialized pytorch model
+    :param model_name: name for model
+    :param data_name: name for dataset
+    :param train_data_loader: dataloader
+    :param num_trail: total number of trails trained
+    :param pos_thre: threshold for positive samples
+    :param neg_thre: threshold for negative samples
+    :param compute_index: if True, the function will try to get those positive and negative samples indices, if False, the function will load the pre-computed indices
+    :param vis: if True, a histogram of the number of trails that predict this data correctly will be displayed
+    :param save: if True, the function will try to save those positive and negative samples indices
+    '''
     # if we need to compute correct index
     if compute_index:
         print('Compute correctly predicted data indices...')
@@ -71,7 +83,7 @@ def get_graddict(model,
     
     
     # get average gradient for pos samples and neg samples
-    trail = 1
+    trail = 1 #FIXME: use trail 1 to compute gradients
     checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
     model.load_state_dict(torch.load(checkpoint))
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5) # this optimizer is dummy
@@ -89,10 +101,68 @@ def get_graddict(model,
     return pos_grad_dict, neg_grad_dict
 
 
+def get_neighbor_graddict(model_name,
+                          neighbor_model,
+                          neighbor_model_name,
+                          data_name,
+                          train_data_loader
+                          ):
+    '''
+    Get gradient contradiction dictionary for neighbor model on those contradicted samples for anchor model
+    :param model_name: anchor model name
+    :param neighbor_model: initialized pytorch model
+    :param neighbor_model_name: neighbor model name
+    :param data_name: name for dataset
+    :param train_data_loader: dataloader
+    '''
+    # create loader for positive samples and negative samples
+    pos_index = np.load('./datasets/{}_train_pos_index_{}.npy'.format(data_name, model_name))
+    neg_index = np.load('./datasets/{}_train_neg_index_{}.npy'.format(data_name, model_name))
+
+    train_data_loader_pos = data_loader(batch_size=1,  # batch size must be 1
+                                        dataset_name = data_name, 
+                                        subsample_id=pos_index.tolist(), 
+                                        train=True,
+                                        shuffle=False) # shuffle should be disabled
+
+    train_data_loader_neg = data_loader(batch_size=1, 
+                                        dataset_name = data_name, 
+                                        subsample_id=neg_index.tolist(), 
+                                        train=True,
+                                        shuffle=False) # shuffle should be disabled
+    
+    print('Number of postive samples: ', len(train_data_loader_pos))
+    print('Number of negative samples: ', len(train_data_loader_neg))
+    
+    
+    # get average gradient for pos samples and neg samples
+    trail = 1 # FIXME: use trail 1 to compute gradients
+    checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(neighbor_model_name, data_name, trail)
+    neighbor_model.load_state_dict(torch.load(checkpoint))
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5) # this optimizer is dummy
+    print('Use trail {} to compute conflicting gradients'.format(str(trail)))
+
+    pos_grad_dict = record_grad(neighbor_model, 
+                                train_data_loader_pos, 
+                                criterion=nn.CrossEntropyLoss(reduction='sum'), 
+                                optimizer=optimizer) # should use reduction method to be sum
+
+
+    neg_grad_dict = record_grad(neighbor_model, 
+                                train_data_loader_neg, 
+                                criterion=nn.CrossEntropyLoss(reduction='sum'), 
+                                optimizer=optimizer)
+
+    return pos_grad_dict, neg_grad_dict
+
 
 def record_grad(model, data_loader, criterion, optimizer):
     '''
     Record average gradient for all weights on a given dataloader
+    :param model: initialized pytorch model
+    :param data_loader: dataloader
+    :param criterion: loss function, should set reduction='sum'
+    :param optimizer: optimizer is used to zero-out gradients before backward propagation
     '''
     grad_dict = dict()
     model.train() # enable gradient flow

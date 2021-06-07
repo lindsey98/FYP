@@ -6,7 +6,9 @@ import torch
 
 def plot_training_acc( model, train_data_loader,
                       model_name, data_name, total_trails, logger, vis=True):
-
+    '''
+    Plot training acc over different trails
+    '''
     # training acc
     training_acc_list = []
     for trail in range(1, total_trails+1):
@@ -33,6 +35,9 @@ def plot_training_acc( model, train_data_loader,
 
 
 def weight_contradict(pos_grad_dict, neg_grad_dict, method='sign'):
+    '''
+    Visualize gradient contradiction
+    '''
     
     color_dict = [str(i / 10) for i in reversed(range(0, 10))]
 

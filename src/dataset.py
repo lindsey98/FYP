@@ -19,6 +19,9 @@ class SubSampler(Sampler):
     
     
 def data_loader(dataset_name, batch_size, train=True, subsample_id=None, shuffle=False):
+    '''
+    Dataloader 
+    '''
     # define dataset & transformation
     if dataset_name == 'MNIST':
         transform = transforms.Compose([
