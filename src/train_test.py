@@ -9,6 +9,12 @@ from src.model import *
 import argparse
 from tqdm import tqdm
 import os
+import logging
+import torch.multiprocessing as mp
+import time
+
+torch.multiprocessing.set_start_method('spawn', force=True)# good solution !!!!
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -52,15 +58,16 @@ def train(model,
             total_correct += pred.eq(target.view_as(pred)).sum().item()
 
         total_train_loss /= length
-        logger.info('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
         test_acc = test(model, test_data_loader, criterion, logger)
         
         # save model
         os.makedirs('./checkpoints/{}-{}-model{}/'.format(model_name, data_name, str(trail)), exist_ok=True)
         if epoch == num_epochs - 1 or epoch % 50 == 0:
+            logger.info('epoch [{}/{}], loss:{:.4f} Accuracy: {}/{}'.format(epoch + 1, num_epochs, total_train_loss, total_correct, length))
             location = './checkpoints/{}-{}-model{}/'.format( model_name, data_name, str(trail)) + str(epoch) + '.pt'
             logger.info("Save model in {} at epoch {}".format(location, str(epoch)))
             save(model.state_dict(), location)
+            
             
     return model
 
@@ -85,14 +92,38 @@ def test(model, test_data_loader, criterion, logger):
             correct += pred.eq(target.cuda().view_as(pred)).sum().item()
 
     test_loss /= len(test_data_loader.dataset)
-
-    logger.info('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(test_data_loader.dataset),
-        100. * correct / len(test_data_loader.dataset)))
+    
+    if logger is not None:
+        print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(test_data_loader.dataset),
+            100. * correct / len(test_data_loader.dataset)))
     
     return 100. * correct / len(test_data_loader.dataset)
 
 
+def test_loss(model, test_data_loader, criterion, logger):
+    '''
+    Get testing accuracy
+    '''
+    model.eval()
+    test_loss = 0
+    correct = 0
+    
+    with torch.no_grad():
+        for data, target in tqdm(test_data_loader):
+            data = data.to(device)
+            target = target.to(device)
+            output = model(data)
+            
+            loss = criterion(output, target)
+            test_loss += loss.item()  # sum up batch loss
+
+    test_loss /= len(test_data_loader.dataset)
+    
+    if logger is not None:
+        logger.info('Test set: Average loss: {:.4f}\n'.format(test_loss))
+    
+    return test_loss
 
 def test_correct(model, test_data_loader):
     '''
@@ -141,31 +172,61 @@ if __name__ == '__main__':
     dataset = args.data_name
     trail = args.trail
    
+            
+    logging.basicConfig(filename='log/train_initial_{}.log'.format(model_name), level=logging.INFO)
+    logger = logging.getLogger('trace')
     
     # load model
+    logger.info("Loading model")
     model = KNOWN_MODELS[model_name]
+    print(model)
     model = model.to(device)
+    logger.info("Finish loading model")
     
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     criterion = nn.CrossEntropyLoss(reduction='sum')
     
     # create dataloader
+    logger.info("Start loading data")
     train_data_loader = data_loader(dataset_name = dataset, 
                                     batch_size = batch_size, 
                                     train=True)
     test_data_loader = data_loader(dataset_name = dataset, 
                                     batch_size = batch_size, 
-                                    train=False)    
+                                    train=False)  
+    logger.info("Finish loading data")
+    
     if args.retrain == True:
         # load pretrained model
         model.load_from(args.weights)
-        
+
     # train ! 
-    train(model, 
-          model_name,
-          dataset, 
-          trail,
-          train_data_loader, test_data_loader, 
-          criterion, optimizer, 
-          num_epochs,
-          logger)
+    processes = []
+    for rank in range(1, trail+1):
+        # training each neighbor for 5 times in parallel!
+        p = mp.Process(target=train, args=(model, 
+                                      model_name,
+                                      dataset, 
+                                      rank,
+                                      train_data_loader, test_data_loader, 
+                                      criterion, optimizer,
+                                      num_epochs,
+                                      logger))
+        p.start()
+        processes.append(p)
+    for p in processes:
+        p.join()
+
+        
+#     for rank in range(1, trail+1):
+#         # training each neighbor for 5 times in parallel!
+#         train(model, 
+#               model_name,
+#               dataset, 
+#               rank,
+#               train_data_loader, test_data_loader, 
+#               criterion, optimizer,
+#               num_epochs,
+#               logger)
+
+

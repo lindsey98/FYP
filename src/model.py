@@ -3,8 +3,10 @@ from torch import nn
 import torch.nn.functional as F
 from collections import OrderedDict
 import numpy as np
+from torch.nn import init
+import itertools
 
-    
+
 class CIFAR_17(nn.Module):
     '''
     BaseModel which has 3 CNN layers and 2 FC layers 
@@ -15,16 +17,19 @@ class CIFAR_17(nn.Module):
         self.body = nn.Sequential(OrderedDict([
             ('cnn1', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(3, 8, 3, 1, 1)),
+#                             ('batchnorm', nn.BatchNorm2d(8)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),
             ('cnn2', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(8, 8, 3, 1, 1)),
+#                             ('batchnorm', nn.BatchNorm2d(8)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),             
             ('cnn3', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(8, 8, 3, 1, 1)),
+#                             ('batchnorm', nn.BatchNorm2d(8)),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2)),
                         ])))
@@ -66,18 +71,21 @@ class CIFAR_17_Add(CIFAR_17):
             ('cnn1', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(in_channels=3, out_channels=8+extra_filter[0], 
                                                kernel_size=3+extra_size[0], stride=1, padding=(3+extra_size[0])//2)),
+#                             ('batchnorm', nn.BatchNorm2d(8+extra_filter[0])),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),
             ('cnn2', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(in_channels=8+extra_filter[0], out_channels=8+extra_filter[1], 
                                                kernel_size=3+extra_size[1], stride=1, padding=(3+extra_size[1])//2)),
+#                             ('batchnorm', nn.BatchNorm2d(8+extra_filter[1])),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2))
                         ]))),             
             ('cnn3', nn.Sequential(OrderedDict([
                             ('conv', nn.Conv2d(in_channels=8+extra_filter[1], out_channels=8+extra_filter[2], 
                                                kernel_size=3+extra_size[2], stride=1, padding=(3+extra_size[2])//2)),
+#                             ('batchnorm', nn.BatchNorm2d(8+extra_filter[2])),
                             ('relu', nn.ReLU(inplace=True)),
                             ('pool', nn.MaxPool2d(2)),
                         ])))
@@ -91,7 +99,8 @@ class CIFAR_17_Add(CIFAR_17):
                         ])))
             ]))
         
-    def load_from(self, weights_path):
+        
+    def load_from(self, weights_path): # might not be useful
         pretrain_weights = torch.load(weights_path)
         with torch.no_grad():
             if self.extra_filter[0] == 0 and self.extra_size[0] == 0:
@@ -112,17 +121,29 @@ class CIFAR_17_Add(CIFAR_17):
     
 KNOWN_MODELS = OrderedDict([
     ('CIFAR17', CIFAR_17(10)),
-    ('CIFAR17_double1', CIFAR_17_Add([8, 0, 0], [0, 0, 0], 10)),
-    ('CIFAR17_double2', CIFAR_17_Add([0, 8, 0], [0, 0, 0], 10)),
-    ('CIFAR17_double3', CIFAR_17_Add([0, 0, 8], [0, 0, 0], 10)),
-    ('CIFAR17_filter1', CIFAR_17_Add([0, 0, 0], [2, 0, 0], 10)),
-    ('CIFAR17_filter2', CIFAR_17_Add([0, 0, 0], [0, 2, 0], 10)),
-    ('CIFAR17_filter3', CIFAR_17_Add([0, 0, 0], [0, 0, 2], 10)),
 ])
 
-for i in range(0, 32):
-    for j in range(0, 32):
-        for k in range(0, 32):
-            KNOWN_MODELS['CIFAR17_add{}'.format(str(i)+str(j)+str(k))] = CIFAR_17_Add([i, j, k], [0, 0, 0], 10)
+a = [range(0, 9),range(0, 9),range(0, 9)]
+for comb in list(itertools.product(*a)):
+    i, j, k = comb
+    if len(str(i)) == 1:
+        i = '0'+str(i)
+    else:
+        i = str(i)
+
+    if len(str(j)) == 1:
+        j = '0'+str(j)   
+    else:
+        j = str(j)
+
+    if len(str(k)) == 1:
+        k = '0'+str(k) 
+    else:
+        k = str(k)
+    
+#     print(i, j, k)
+    KNOWN_MODELS['CIFAR17_add{}'.format(i+j+k)] = \
+                                CIFAR_17_Add([int(i), int(j), int(k)], [0, 0, 0], 10)
+#     print(CIFAR_17_Add([int(i), int(j), int(k)], [0, 0, 0], 10))
+
             
-# print(KNOWN_MODELS.keys())

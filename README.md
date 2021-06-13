@@ -22,3 +22,6 @@ In this project, we are going to explore the gradient contradiction behavior in 
 
 ```
 
+## Several observations
+- Adam is better than SGD
+- BatchNorm does not work well for simple underfitting model

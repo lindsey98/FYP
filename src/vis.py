@@ -1,5 +1,5 @@
 
-from src.train_test import test
+from src.train_test import test, test_loss
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -32,6 +32,38 @@ def plot_training_acc( model, train_data_loader,
     print('Average training acc: {}'.format(np.mean(training_acc_list)))
     
     return training_acc_list
+
+
+def plot_training_loss( model, train_data_loader,
+                        model_name, data_name, total_trails, logger, vis=True):
+    '''
+    Plot training acc over different trails
+    '''
+    # training acc
+    training_loss_list = []
+    
+    for trail in range(1, total_trails+1):
+        checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
+        model.load_state_dict(torch.load(checkpoint))
+        print('Trail {}'.format(str(trail)))
+        
+        train_loss = test_loss(model, train_data_loader, 
+                               criterion=torch.nn.CrossEntropyLoss(reduction='sum'),
+                               logger=logger)
+        training_loss_list.append(train_loss)
+    
+    # plot training acc
+    if vis == True:
+        plt.bar(range(1, total_trails+1), height=training_loss_list)
+        plt.ylim(bottom=70, top=80)
+        plt.axhline(y=np.mean(training_loss_list), color='r', linestyle='-')
+        plt.xlabel('Training model index')
+        plt.ylabel('Training Loss')
+        plt.show()
+    
+    print('Average training loss: {}'.format(np.mean(training_loss_list)))
+    
+    return training_loss_list
 
 
 def weight_contradict(pos_grad_dict, neg_grad_dict, method='sign'):

@@ -35,7 +35,7 @@ if __name__ == '__main__':
     
     parser.add_argument('--num_trail', type=int, default=5, help='number of trails for each model')
     parser.add_argument('--checkpoints', type=str, default='./checkpoints', help='directory for pretrained weights')
-    parser.add_argument('--budget', type=str, default=100, help='budget to increase kernel filters')
+    parser.add_argument('--budget', type=str, default=50, help='budget to increase kernel filters')
 
     args = parser.parse_args()
     
@@ -67,18 +67,40 @@ if __name__ == '__main__':
     round_ = 0
     while True:
         start_time = time.time()
-        last_model_i, last_model_j, last_model_k = int(model_name.split('add')[1][0]), \
-                                                   int(model_name.split('add')[1][1]), \
-                                                   int(model_name.split('add')[1][2]) # current index of model
+        # current index of model
+        last_model_i, last_model_j, last_model_k = int(model_name.split('add')[1][0:2]), \
+                                                   int(model_name.split('add')[1][2:4]), \
+                                                   int(model_name.split('add')[1][4:6]) 
         
         # train all its neighbors
         neighbour_dict = [[1,0,0], [0,1,0], [0,0,1]]
+        neighbour_names = []
         neighbour_acc = []
+        neighbour_loss = []
+        
         for neighbor in neighbour_dict:
             cur_model_i = last_model_i + neighbor[0]
             cur_model_j = last_model_j + neighbor[1]
             cur_model_k = last_model_k + neighbor[2]
-            cur_model_name = model_name.split('add')[0]+'add'+str(cur_model_i)+str(cur_model_j)+str(cur_model_k)
+            
+            # ensure naming consistency
+            if len(str(cur_model_i)) == 1:
+                cur_model_i = '0'+str(cur_model_i)
+            else:
+                cur_model_i = str(cur_model_i)
+                
+            if len(str(cur_model_j)) == 1:
+                cur_model_j = '0'+str(cur_model_j)   
+            else:
+                cur_model_j = str(cur_model_j)
+                
+            if len(str(cur_model_k)) == 1:
+                cur_model_k = '0'+str(cur_model_k) 
+            else:
+                cur_model_k = str(cur_model_k)
+                
+            cur_model_name = model_name.split('add')[0]+ 'add' + str(cur_model_i) + str(cur_model_j) + str(cur_model_k)
+            neighbour_names.append(cur_model_name)
             logger.info('Start training {}'.format(cur_model_name))
             
             # load model
@@ -108,6 +130,16 @@ if __name__ == '__main__':
             for p in processes:
                 p.join()
 
+#             for rank in range(1, trail+1):
+#                 train(model, 
+#                       model_name,
+#                       dataset, 
+#                       rank,
+#                       train_data_loader, test_data_loader, 
+#                       criterion, optimizer,
+#                       num_epochs,
+#                       logger)
+
             # get average training acc over trails
             train_acc = np.mean(plot_training_acc(model, 
                                                   train_data_loader, 
@@ -119,13 +151,23 @@ if __name__ == '__main__':
             
             logger.info('Average training acc {:.4f}'.format(train_acc))
             neighbour_acc.append(train_acc)
+            
+            # get average training loss over trails
+            train_loss = np.mean(plot_training_loss(model, 
+                                          train_data_loader, 
+                                          model_name=cur_model_name, 
+                                          data_name=dataset, 
+                                          total_trails=trail, 
+                                          logger=logger, 
+                                          vis=False))
+            
+            logger.info('Average training loss {:.4f}'.format(train_loss))
+            neighbour_loss.append(train_loss)            
         
         # compute best neighbor, update model
-        best_neigh = np.asarray(neighbour_dict)[np.asarray(neighbour_acc) == max(neighbour_acc)][0]
-        best_model_i = last_model_i + best_neigh[0]
-        best_model_j = last_model_j + best_neigh[1]
-        best_model_k = last_model_k + best_neigh[2]
-        model_name = model_name.split('add')[0] + 'add' + str(best_model_i) + str(best_model_j) + str(best_model_k)
+#         best_neigh = np.asarray(neighbour_names)[np.asarray(neighbour_acc) == max(neighbour_acc)][0]
+        best_neigh = np.asarray(neighbour_names)[np.asarray(neighbour_loss) == min(neighbour_loss)][0]
+        model_name = best_neigh
         logger.info('Update model name as {}'.format(model_name))
         
         round_ += 1
