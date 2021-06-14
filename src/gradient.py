@@ -7,6 +7,8 @@ import numpy as np
 from torch import optim
 from torch import nn
 from src.dataset import data_loader
+from scipy.spatial import distance
+from sklearn.cluster import KMeans
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -36,7 +38,8 @@ def get_graddict(model,
         correct_index_list = dict()
         for trail in range(1, num_trail+1):
             correct_index_list[str(trail)] = [] # initialize
-
+            print(model)
+            print(model_name)
             checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
             model.load_state_dict(torch.load(checkpoint))
             print('Trail {}'.format(str(trail)))
@@ -84,9 +87,9 @@ def get_graddict(model,
     
     # get average gradient for pos samples and neg samples
     trail = 1 #FIXME: use trail 1 to compute gradients
-    checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, trail)
+    checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(model_name, data_name, str(1))
     model.load_state_dict(torch.load(checkpoint))
-    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5) # this optimizer is dummy
+    optimizer = optim.Adam(model.parameters(), lr=0.001) # this optimizer is dummy
     print('Use trail {} to compute conflicting gradients'.format(str(trail)))
 
     pos_grad_dict = record_grad(model, train_data_loader_pos, 
@@ -139,7 +142,7 @@ def get_neighbor_graddict(model_name,
     trail = 1 # FIXME: use trail 1 to compute gradients
     checkpoint = 'checkpoints/{}-{}-model{}/199.pt'.format(neighbor_model_name, data_name, trail)
     neighbor_model.load_state_dict(torch.load(checkpoint))
-    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5) # this optimizer is dummy
+    optimizer = optim.Adam(neighbor_model.parameters(), lr=0.001) # this optimizer is dummy
     print('Use trail {} to compute conflicting gradients'.format(str(trail)))
 
     pos_grad_dict = record_grad(neighbor_model, 
@@ -154,6 +157,8 @@ def get_neighbor_graddict(model_name,
                                 optimizer=optimizer)
 
     return pos_grad_dict, neg_grad_dict
+
+
 
 
 def record_grad(model, data_loader, criterion, optimizer):
@@ -182,10 +187,11 @@ def record_grad(model, data_loader, criterion, optimizer):
         
         for name, param in model.named_parameters():
             grad = param.grad.detach().clone().cpu()
-            if name not in grad_dict.keys():
-                grad_dict[name] = grad
-            else:
-                grad_dict[name] = torch.add(grad_dict[name], grad) # sum the gradients over all samples
+            if 'weight' in name:
+                if name not in grad_dict.keys():
+                    grad_dict[name] = grad.mean(dim=tuple(range(1, len(grad.shape)))) # average over each cnn filter
+                else:
+                    grad_dict[name] = torch.add(grad_dict[name], grad.mean(dim=tuple(range(1, len(grad.shape))))) # sum the gradients over all samples
             
     model.eval() 
     # zero the parameter gradients
@@ -197,3 +203,103 @@ def record_grad(model, data_loader, criterion, optimizer):
         grad_dict[k] = torch.div(grad_dict[k], data_ct)
    
     return grad_dict
+
+
+
+# def record_allgrad(model, data_loader, criterion, optimizer):
+#     '''
+#     Record all gradient for all weights on a given dataloader
+#     :param model: initialized pytorch model
+#     :param data_loader: dataloader
+#     :param criterion: loss function, should set reduction='sum'
+#     :param optimizer: optimizer is used to zero-out gradients before backward propagation
+#     '''
+#     grad_dict = dict()
+#     model.train() # enable gradient flow
+#     data_ct = 0
+#     for data in tqdm(data_loader):
+#         img, target = data
+#         img = img.to(device)
+#         target = target.to(device)
+#         data_ct += img.shape[0]
+
+#         output = model.forward(img)
+        
+#         # zero the parameter gradients
+#         optimizer.zero_grad()
+#         loss = criterion(output, target)
+#         loss.backward()
+        
+#         for name, param in model.named_parameters():
+#             grad = param.grad.detach().clone().cpu()
+#             if 'weight' in name:
+#                 if name not in grad_dict.keys():
+#                     grad_dict[name] = [grad.mean(dim=tuple(range(1, len(grad.shape))))]
+#                 else:
+#                     grad_dict[name].append(grad.mean(dim=tuple(range(1, len(grad.shape)))))
+            
+#     model.eval() 
+#     # zero the parameter gradients
+#     optimizer.zero_grad()
+#     print('Length of data', data_ct)
+    
+#     # get average grad_dict
+#     for k in grad_dict.keys():
+#         grad_dict[k] = np.asarray([x.numpy() for x in grad_dict[k]])
+   
+#     return grad_dict
+
+
+# def record_clustergrad(model, data_loader, criterion, optimizer):
+#     '''
+#     Record gradient clusters given a data_loader
+#     :param model: initialized pytorch model
+#     :param data_loader: dataloader
+#     :param criterion: loss function, should set reduction='sum'
+#     :param optimizer: optimizer is used to zero-out gradients before backward propagation
+#     '''
+#     grad_dict = dict()
+#     model.train() # enable gradient flow
+#     data_ct = 0
+#     for data in tqdm(data_loader):
+#         img, target = data
+#         img = img.to(device)
+#         target = target.to(device)
+#         data_ct += img.shape[0]
+
+#         output = model.forward(img)
+        
+#         # zero the parameter gradients
+#         optimizer.zero_grad()
+#         loss = criterion(output, target)
+#         loss.backward()
+        
+#         for name, param in model.named_parameters():
+#             grad = param.grad.detach().clone().cpu()
+#             if 'weight' in name:
+#                 if name not in grad_dict.keys():
+#                     grad_dict[name] = [grad.mean(dim=tuple(range(1, len(grad.shape))))]
+#                 else:
+#                     grad_dict[name].append(grad.mean(dim=tuple(range(1, len(grad.shape)))))
+            
+#     model.eval() 
+#     # zero the parameter gradients
+#     optimizer.zero_grad()
+#     print('Length of data', data_ct)
+    
+#     print('Start clustering')
+#     clustered_grad = dict()
+#     for key in grad_dict.keys():
+#         if 'weight' in key:
+#             data = np.asarray([x.numpy() for x in grad_dict[key]])
+#             kmeans = KMeans(init="random", n_clusters=20, random_state=42).fit(data)
+#             represent_data = kmeans.cluster_centers_
+# #             data_dist = distance.cdist(data, data, 'cosine')
+# #             print(data_dist.shape)
+# #             data_distavg = data_dist.mean(axis=1)
+# #             represent_data = data[np.argsort(data_distavg)][:10]
+#             clustered_grad[key] = represent_data
+        
+#     print('End clustering')
+   
+#     return clustered_grad

@@ -14,7 +14,7 @@ import torch.multiprocessing as mp
 import time
 
 torch.multiprocessing.set_start_method('spawn', force=True)# good solution !!!!
-# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=256, help='batch size')
     parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
-    parser.add_argument('--trail', type=int, default=1, help='index of trained model')
+    parser.add_argument('--trail', type=int, default=5, help='index of trained model')
     parser.add_argument('--retrain', type=bool, default=False, help='normal training or model retraining')
     parser.add_argument('--weights', type=str, default='.', help='pretrained weights')
     
@@ -201,21 +201,21 @@ if __name__ == '__main__':
         model.load_from(args.weights)
 
     # train ! 
-    processes = []
-    for rank in range(1, trail+1):
-        # training each neighbor for 5 times in parallel!
-        p = mp.Process(target=train, args=(model, 
-                                      model_name,
-                                      dataset, 
-                                      rank,
-                                      train_data_loader, test_data_loader, 
-                                      criterion, optimizer,
-                                      num_epochs,
-                                      logger))
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()
+#     processes = []
+#     for rank in range(1, trail+1):
+#         # training each neighbor for 5 times in parallel!
+#         p = mp.Process(target=train, args=(model, 
+#                                       model_name,
+#                                       dataset, 
+#                                       rank,
+#                                       train_data_loader, test_data_loader, 
+#                                       criterion, optimizer,
+#                                       num_epochs,
+#                                       logger))
+#         p.start()
+#         processes.append(p)
+#     for p in processes:
+#         p.join()
 
         
 #     for rank in range(1, trail+1):
@@ -228,5 +228,15 @@ if __name__ == '__main__':
 #               criterion, optimizer,
 #               num_epochs,
 #               logger)
+
+
+    train(model, 
+              model_name,
+              dataset, 
+              trail,
+              train_data_loader, test_data_loader, 
+              criterion, optimizer,
+              num_epochs,
+              logger)
 
 

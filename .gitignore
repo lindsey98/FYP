@@ -16,3 +16,4 @@ states/
 ResidualLoss/best-image/
 ResidualLoss/worst-image/
 ResidualLoss/GAP-Analysis/image
+src/__pycache__/

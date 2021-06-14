@@ -15,13 +15,9 @@ In this project, we are going to explore the gradient contradiction behavior in 
   |_ gradient.py: get gradient dictionary
   |_ Visualize_gradient_contradict.ipynb: gradient contradiction analysis
   |_ vis.py: visualization script
-  
-|_scripts
-  |_ job.sh: bash script for normal training 
-  |_ retrain.sh: bash script for re-training 
 
 ```
 
 ## Several observations
-- Adam is better than SGD
-- BatchNorm does not work well for simple underfitting model
+- Adam is better than SGD (not sure why)
+- BatchNorm does not work well for simple underfitting model (BatchNorm is designed to solve covariance shift problem, thus more relevant to complex overfitting networks)
