@@ -47,8 +47,6 @@ if __name__ == '__main__':
     trail = args.num_trail
     
     # create logger
-#     if os.path.exists('log/train_trace.log'):
-#         os.unlink('log/train_trace.log') # delete old log
     logging.basicConfig(filename='log/train_trace.log', level=logging.INFO)
     logger = logging.getLogger('trace')
 
@@ -104,7 +102,8 @@ if __name__ == '__main__':
             logger.info('Start training {}'.format(cur_model_name))
             
             # load model
-            model = KNOWN_MODELS[cur_model_name]
+            model = ChildModel(extra_filter=[int(cur_model_i), int(cur_model_j), int(cur_model_k)], 
+                   parent_dict_path='./checkpoints/{}-{}-model{}/{}.pt'.format(model_name, dataset, str(1), str(num_epochs-1)))
             model = model.to(device)
 
             optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
@@ -129,16 +128,6 @@ if __name__ == '__main__':
                 processes.append(p)
             for p in processes:
                 p.join()
-
-#             for rank in range(1, trail+1):
-#                 train(model, 
-#                       model_name,
-#                       dataset, 
-#                       rank,
-#                       train_data_loader, test_data_loader, 
-#                       criterion, optimizer,
-#                       num_epochs,
-#                       logger)
 
             # get average training acc over trails
             train_acc = np.mean(plot_training_acc(model, 
@@ -166,7 +155,7 @@ if __name__ == '__main__':
         
         # compute best neighbor, update model
 #         best_neigh = np.asarray(neighbour_names)[np.asarray(neighbour_acc) == max(neighbour_acc)][0]
-        best_neigh = np.asarray(neighbour_names)[np.asarray(neighbour_loss) == min(neighbour_loss)][0]
+        best_neigh = np.asarray(neighbour_names)[np.asarray(neighbour_loss) == min(neighbour_loss)][0] # use training loss as selection metric
         model_name = best_neigh
         logger.info('Update model name as {}'.format(model_name))
         

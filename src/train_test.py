@@ -178,8 +178,13 @@ if __name__ == '__main__':
     
     # load model
     logger.info("Loading model")
-    model = KNOWN_MODELS[model_name]
-    print(model)
+    model_i, model_j, model_k = int(model_name.split('add')[1][0:2]), \
+                                int(model_name.split('add')[1][2:4]), \
+                                int(model_name.split('add')[1][4:6]) 
+
+    model = ChildModel(extra_filter=[model_i, model_j, model_k], parent_dict_path=None)
+    
+    logger.info(model)
     model = model.to(device)
     logger.info("Finish loading model")
     
@@ -201,22 +206,22 @@ if __name__ == '__main__':
         model.load_from(args.weights)
 
     # train ! 
-#     processes = []
-#     for rank in range(1, trail+1):
-#         # training each neighbor for 5 times in parallel!
-#         p = mp.Process(target=train, args=(model, 
-#                                       model_name,
-#                                       dataset, 
-#                                       rank,
-#                                       train_data_loader, test_data_loader, 
-#                                       criterion, optimizer,
-#                                       num_epochs,
-#                                       logger))
-#         p.start()
-#         processes.append(p)
-#     for p in processes:
-#         p.join()
-
+    processes = []
+    for rank in range(1, trail+1):
+        # training each neighbor for 5 times in parallel!
+        p = mp.Process(target=train, args=(model, 
+                                      model_name,
+                                      dataset, 
+                                      rank,
+                                      train_data_loader, test_data_loader, 
+                                      criterion, optimizer,
+                                      num_epochs,
+                                      logger))
+        p.start()
+        processes.append(p)
+    for p in processes:
+        p.join()
+    
         
 #     for rank in range(1, trail+1):
 #         # training each neighbor for 5 times in parallel!
@@ -230,13 +235,13 @@ if __name__ == '__main__':
 #               logger)
 
 
-    train(model, 
-              model_name,
-              dataset, 
-              trail,
-              train_data_loader, test_data_loader, 
-              criterion, optimizer,
-              num_epochs,
-              logger)
+#     train(model, 
+#               model_name,
+#               dataset, 
+#               trail,
+#               train_data_loader, test_data_loader, 
+#               criterion, optimizer,
+#               num_epochs,
+#               logger)
 
 
