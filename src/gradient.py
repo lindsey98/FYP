@@ -69,13 +69,13 @@ def get_graddict(model,
     pos_index = np.load('./datasets/{}_train_pos_index_{}.npy'.format(data_name, model_name))
     neg_index = np.load('./datasets/{}_train_neg_index_{}.npy'.format(data_name, model_name))
 
-    train_data_loader_pos = data_loader(batch_size=1,  # batch size must be 1
+    train_data_loader_pos = data_loader(batch_size=64,  # batch size must be 1
                                         dataset_name = data_name, 
                                         subsample_id=pos_index.tolist(), 
                                         train=True,
                                         shuffle=False) # shuffle should be disabled
 
-    train_data_loader_neg = data_loader(batch_size=1, 
+    train_data_loader_neg = data_loader(batch_size=64, 
                                         dataset_name = data_name, 
                                         subsample_id=neg_index.tolist(), 
                                         train=True,
@@ -122,20 +122,20 @@ def get_neighbor_graddict(model_name,
     pos_index = np.load('./datasets/{}_train_pos_index_{}.npy'.format(data_name, model_name))
     neg_index = np.load('./datasets/{}_train_neg_index_{}.npy'.format(data_name, model_name))
 
-    train_data_loader_pos = data_loader(batch_size=1,  # batch size must be 1
+    train_data_loader_pos = data_loader(batch_size=64,  # batch size must be 1
                                         dataset_name = data_name, 
                                         subsample_id=pos_index.tolist(), 
                                         train=True,
                                         shuffle=False) # shuffle should be disabled
 
-    train_data_loader_neg = data_loader(batch_size=1, 
+    train_data_loader_neg = data_loader(batch_size=64, 
                                         dataset_name = data_name, 
                                         subsample_id=neg_index.tolist(), 
                                         train=True,
                                         shuffle=False) # shuffle should be disabled
     
-    print('Number of postive samples: ', len(train_data_loader_pos))
-    print('Number of negative samples: ', len(train_data_loader_neg))
+    print('Number of postive sample batches: ', len(train_data_loader_pos))
+    print('Number of negative sample batches: ', len(train_data_loader_neg))
     
     
     # get average gradient for pos samples and neg samples

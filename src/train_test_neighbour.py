@@ -65,13 +65,16 @@ if __name__ == '__main__':
     round_ = 0
     while True:
         start_time = time.time()
-        # current index of model
+        # anchor model's i,j,k
         last_model_i, last_model_j, last_model_k = int(model_name.split('add')[1][0:2]), \
                                                    int(model_name.split('add')[1][2:4]), \
                                                    int(model_name.split('add')[1][4:6]) 
         
         # train all its neighbors
-        neighbour_dict = [[1,0,0], [0,1,0], [0,0,1]]
+        neighbour_dict = [[1,0,0],  # FIXME: rightnot only change number of filters
+                          [0,1,0], 
+                          [0,0,1]]
+        
         neighbour_names = []
         neighbour_acc = []
         neighbour_loss = []
