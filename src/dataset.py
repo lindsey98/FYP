@@ -20,7 +20,13 @@ class SubSampler(Sampler):
     
 def data_loader(dataset_name, batch_size, train=True, subsample_id=None, shuffle=False):
     '''
-    Dataloader 
+    Dataloader which supports subsampling 
+    :param dataset_name: [MNIST|FashionMNIST|CIFAR10]
+    :param batch_size: 
+    :param train: training data/test data
+    :param subsample_id: None/List of Ids you want to subsample
+    :param shuffle: use shuffle in dataloader?
+    :return : A torch.utils.data.DataLoader
     '''
     # define dataset & transformation
     if dataset_name == 'MNIST':

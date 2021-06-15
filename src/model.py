@@ -42,7 +42,7 @@ class BaseModel(nn.Module):
         '''
         cw, ch = w, h
         for m in self.body.modules():
-            if isinstance(m, nn.MaxPool2d):
+            if isinstance(m, nn.MaxPool2d) or isinstance(m, nn.AvgPool2d):
                 cw, ch = cw // m.kernel_size, ch // m.kernel_size
 
             if isinstance(m, nn.Conv2d):
@@ -130,10 +130,8 @@ class ChildModel(BaseModel):
         
         for name in pretrain_weights.keys():
             trained_weights = pretrain_weights[name]
-#             print(name, trained_weights.shape)
             try:
                 self.state_dict()[name].copy_(trained_weights)
-#                 raise Exception 
             except RuntimeError as e: # solve size mismatch exception
                 print("Layer {} has been mutated, call dynamic inheritance".format(name))
                 self._dynamic_inherit(name, trained_weights)
@@ -145,13 +143,12 @@ class ChildModel(BaseModel):
         '''
         if 'weight' in name:
 #             print('After initialization', self.state_dict()[name][0])
-            
             initialized_weights = self.state_dict()[name].clone()
             dummy_weights = torch.zeros_like(initialized_weights)
             
-            if len(dummy_weights.shape) == 2: # for linear layers
-                
-                dummy_weights[:trained_weights.shape[0], :trained_weights.shape[1]] = trained_weights # only inheritate first few dimensions
+            if len(dummy_weights.shape) == 2: # for dense layers
+                # only inheritate first few dimensions
+                dummy_weights[:trained_weights.shape[0], :trained_weights.shape[1]] = trained_weights 
                 mask = (dummy_weights == 0)
 
                 self.state_dict()[name].copy_(initialized_weights*mask + dummy_weights)
@@ -159,7 +156,7 @@ class ChildModel(BaseModel):
                                             
             elif len(dummy_weights.shape) == 4: # for CNN layers
                 dummy_weights[:trained_weights.shape[0], :trained_weights.shape[1],
-                              :trained_weights.shape[2], :trained_weights.shape[3]] = trained_weights # only inheritate first few dimensions
+                              :trained_weights.shape[2], :trained_weights.shape[3]] = trained_weights 
                 mask = (dummy_weights == 0)
                 self.state_dict()[name].copy_(initialized_weights*mask + dummy_weights)
 #                 print('After copying', self.state_dict()[name][0])
@@ -182,31 +179,3 @@ class ChildModel(BaseModel):
         else:
             print('Not inheritating layer {} because it has neither weight or bias parameters'.format(name))        
     
-# KNOWN_MODELS = OrderedDict([
-#     ('CIFAR17', CIFAR_17(10)),
-# ])
-
-# a = [range(0, 17),range(0, 17),range(0, 17)]
-# for comb in list(itertools.product(*a)):
-#     i, j, k = comb
-#     if len(str(i)) == 1:
-#         i = '0'+str(i)
-#     else:
-#         i = str(i)
-
-#     if len(str(j)) == 1:
-#         j = '0'+str(j)   
-#     else:
-#         j = str(j)
-
-#     if len(str(k)) == 1:
-#         k = '0'+str(k) 
-#     else:
-#         k = str(k)
-    
-# #     print(i, j, k)
-#     KNOWN_MODELS['CIFAR17_add{}'.format(i+j+k)] = \
-#                                 CIFAR_17_Add([int(i), int(j), int(k)], [0, 0, 0], 10)
-#     print(CIFAR_17_Add([int(i), int(j), int(k)], [0, 0, 0], 10))
-
-            

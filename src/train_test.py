@@ -222,26 +222,4 @@ if __name__ == '__main__':
     for p in processes:
         p.join()
     
-        
-#     for rank in range(1, trail+1):
-#         # training each neighbor for 5 times in parallel!
-#         train(model, 
-#               model_name,
-#               dataset, 
-#               rank,
-#               train_data_loader, test_data_loader, 
-#               criterion, optimizer,
-#               num_epochs,
-#               logger)
-
-
-#     train(model, 
-#               model_name,
-#               dataset, 
-#               trail,
-#               train_data_loader, test_data_loader, 
-#               criterion, optimizer,
-#               num_epochs,
-#               logger)
-
-
+ 
