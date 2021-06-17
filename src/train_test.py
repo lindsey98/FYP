@@ -183,6 +183,7 @@ if __name__ == '__main__':
                                 int(model_name.split('add')[1][4:6]) 
 
     model = ChildModel(extra_filter=[model_i, model_j, model_k], parent_dict_path=None)
+    print(model)
     
     logger.info(model)
     model = model.to(device)
