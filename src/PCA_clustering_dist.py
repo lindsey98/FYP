@@ -227,7 +227,7 @@ if __name__ == '__main__':
         # use pooling to do dimension reduction
         if 'cnn' in k:
             FEATS[k] = F.adaptive_avg_pool2d(torch.from_numpy(FEATS[k]), (4,4))
-            print(FEATS[k].shape)
+            # print(FEATS[k].shape)
             FEATS[k] = FEATS[k].numpy()
         FEATS[k] = FEATS[k].reshape(FEATS[k].shape[0], FEATS[k].shape[1], -1)
 
@@ -246,6 +246,7 @@ if __name__ == '__main__':
                 matched_dict, edge_matched_ratio = bipatite_max_weight_matching(source=index_cluster_dict,
                                                                                 target=index_label_dict)
                 print(np.mean(edge_matched_ratio))
+
         elif 'fc' in k:
             print('Layer {}'.format(k))
             X_proj, index_cluster_dict = PCA_clustering(FEATS[k][:, :, 0])
