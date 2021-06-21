@@ -19,7 +19,7 @@ from tqdm import tqdm
 import pickle
 import random
 from itertools import combinations
-from sklearn.preprocessing import StandardScaler, MaxAbsScaler
+from sklearn.preprocessing import StandardScaler, MaxAbsScaler, MinMaxScaler
 from scipy.spatial.distance import pdist, squareform
 from sklearn.metrics.pairwise import rbf_kernel, cosine_similarity
 from sklearn.metrics import pairwise_distances
@@ -30,6 +30,49 @@ import networkx as nx
 from sklearn.mixture import GaussianMixture
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+
+def Kernel_Mask(X, LABELS, method='linear'):
+    '''
+    Compute Distance with Labels
+    :param X: shape N x p
+    :param LABELS: gt labels shape N
+    :param method: distance type
+    '''
+
+    if method == 'linear':
+        # first standardize
+        scaler = MinMaxScaler()  # 0-1之间
+        X = scaler.fit_transform(X)
+        L_X = cosine_similarity(X, X)  # 越大离得越近
+
+    elif method == 'rbf':
+        # first standardize
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+        L_X = rbf_kernel(X, X)  # 越大离得越近
+
+    elif method == 'euclidean':
+        # first standardize
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+        L_X = pairwise_distances(X, X, metric='euclidean')  # 越小离得越近
+
+    else:
+        raise NotImplementedError
+
+    # create mask for observations with same labels except for itself
+    mask = ((LABELS[:, None] == LABELS).astype(float)) * (1 - np.eye(L_X.shape[0]))
+    # create mask for observations with diff labels except for itself
+    reverse_mask = ((LABELS[:, None] != LABELS).astype(float)) * (1 - np.eye(L_X.shape[0]))
+
+    same_sum = np.dot(mask, L_X) * np.eye(L_X.shape[0])  # avg distance with same label
+    diff_sum = np.dot(reverse_mask, L_X) * np.eye(L_X.shape[0])  # avg distance with different label
+
+    same_avg = np.diagonal(same_sum) / np.sum(mask, axis=0)
+    diff_avg = np.diagonal(diff_sum) / np.sum(reverse_mask, axis=0)
+
+    return L_X, same_avg, diff_avg
 
 def customize_clustering(X, method):
     '''
