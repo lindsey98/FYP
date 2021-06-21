@@ -102,10 +102,10 @@ if __name__ == '__main__':
 
     ## Compute distance
 
-    with open('./checkpoints/CIFAR17_add000001-CIFAR10-model1/feat_representation.pkl', 'rb') as handle:
+    with open('./checkpoints/CIFAR17_add010004-CIFAR10-model1/feat_representation.pkl', 'rb') as handle:
         FEATS = pickle.load(handle)
 
-    with open('./checkpoints/CIFAR17_add000001-CIFAR10-model1/label.pkl', 'rb') as handle:
+    with open('./checkpoints/CIFAR17_add010004-CIFAR10-model1/label.pkl', 'rb') as handle:
         LABELS = pickle.load(handle)
 
 
