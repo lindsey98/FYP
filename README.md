@@ -15,6 +15,8 @@ In this project, we are going to explore the gradient contradiction behavior in 
   |_ gradient.py: get gradient dictionary
   |_ Visualize_gradient_contradict.ipynb: gradient contradiction analysis
   |_ vis.py: visualization script
+  |_ compute_feat.py: compute and save intermediate feature representations
+  |_ distinguish_potential.py: get layer-wise distinguishing potential 
 
 ```
 
