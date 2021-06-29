@@ -47,7 +47,8 @@ if __name__ == '__main__':
     trail = args.num_trail
     
     # create logger
-    logging.basicConfig(filename='log/train_trace.log', level=logging.INFO)
+#     logging.basicConfig(filename='log/train_trace.log', level=logging.INFO)
+    logging.basicConfig(filename='log/test_trace.log', level=logging.INFO)
     logger = logging.getLogger('trace')
 
     
@@ -134,26 +135,30 @@ if __name__ == '__main__':
 
             # get average training acc over trails
             train_acc = np.mean(plot_training_acc(model, 
-                                                  train_data_loader, 
+#                                                   train_data_loader, 
+                                                  test_data_loader,
                                                   model_name=cur_model_name, 
                                                   data_name=dataset, 
                                                   total_trails=trail, 
                                                   logger=logger, 
                                                   vis=False))
             
-            logger.info('Average training acc {:.4f}'.format(train_acc))
+#             logger.info('Average training acc {:.4f}'.format(train_acc))
+            logger.info('Average testing acc {:.4f}'.format(train_acc))
             neighbour_acc.append(train_acc)
             
             # get average training loss over trails
             train_loss = np.mean(plot_training_loss(model, 
-                                          train_data_loader, 
+#                                           train_data_loader, 
+                                          test_data_loader,
                                           model_name=cur_model_name, 
                                           data_name=dataset, 
                                           total_trails=trail, 
                                           logger=logger, 
                                           vis=False))
             
-            logger.info('Average training loss {:.4f}'.format(train_loss))
+#             logger.info('Average training loss {:.4f}'.format(train_loss))
+            logger.info('Average testing loss {:.4f}'.format(train_loss))
             neighbour_loss.append(train_loss)            
         
         # compute best neighbor, update model
